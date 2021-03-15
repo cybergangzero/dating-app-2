@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/css/bootstrap.min.css" />
+  <title></title>
+   <style type="text/css">
+    img{
+      max-width: 100%;
+      height: auto;
+    }
+    h2, p, label, li, th, td{
+      font-family: monospace;
+    }
+    #online-circle{
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: green;
+    }
+  </style>
+</head>
+
+<body>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/search">Busqueda</a></li>
+    <li class="breadcrumb-item"><a href="/chat-interface">Chat</a></li>
+    <li class="breadcrumb-item"><a href="/my-profile">Mi perfil</a></li>
+    <li class="breadcrumb-item"><a href="/account-settings">Configuracion de la cuenta</a></li>
+    <li class="breadcrumb-item"><a href="/logout">Salir</a></li>
+  </ol>
+</nav>
+<form action="/search/users" method="get">
+<label for="customRange1">Rango de edad</label>
+<input type="range" class="form-range" id="age" name='edad' min="35" max="90" step="1" onchange="updateAge(this.value);">
+<p id="valorEdad"></p>
+<select class="form-select" id="country" name="pais">
+  <option>Todos los paises</option>
+</select>
+<input id="online" type="checkbox" name="online">
+ <label>Online</label><br>
+<button type="submit" class="btn btn-primary" id="search">Buscar</button>
+</form>
+
+  <table class="table">
+    <tbody>
+       <!--Perfiles de usuarios-->
+    </tbody>
+  </table>
+
+  <nav aria-label="Page navigation example">
+  <ul class="pagination">
+    <!--<li class="page-item"><a class="page-link" href="#">Previous</a></li>
+    <li class="page-item"><a class="page-link" href="#">1</a></li>
+    <li class="page-item"><a class="page-link" href="#">2</a></li>
+    <li class="page-item"><a class="page-link" href="#">3</a></li>
+    <li class="page-item"><a class="page-link" href="#">Next</a></li>-->
+  </ul>
+</nav>
+
+
+<script>
+  function updateAge(x){
+    document.getElementById('valorEdad').textContent=x;
+  }
+  function eliminarNodosHijos(nodoPadre){
+    while (nodoPadre.firstChild){
+      nodoPadre.removeChild(nodoPadre.firstChild);
+    }
+  }
+  let paises=['Argentina', 'Bolivia', 'Brasil', 'Canada', 'Chile', 'Colombia', 'Costa Rica', 'Ecuador', 'España', 'Estados Unidos', 'Inglaterra', 'Mexico', 'Panama', 'Paraguay', 'Peru', 'Uruguay', 'Venezuela'];
+  function removerNodosHijos(nodoPadre){
+    while (nodoPadre.children.length>0){
+      nodoPadre.removeChild(nodoPadre.lastChild);
+    }
+  }
+  let seleccionadorPaises=document.getElementById('country');
+  for (let i=0; i<paises.length; i++){
+    let pais=document.createElement('option');
+    pais.textContent=paises[i];
+    seleccionadorPaises.appendChild(pais);
+  }
+      /*Podria solucionar el problema de los indices de la siguiente forma:
+       Renderizo los perfiles respectivos del indice 1. Los indices se generaran dinamicamente
+       en funcion de la cantidad de perfiles recibidos. Si por ejemplo, recibo 200 perfiles, y los voy a dividir en 40, entonces
+       me quedaria 5 indices, donde cada uno muestra 40. Entonces, el indice 1 muestra los primeros 40 (1..40), el segundo
+       los perfiles del 41..80, y asi sucesivamente. Cabe descatacar que cada indice sera un link (a href) cuyos parametros
+       sera el numero, como por ejemplo a href="/ruta?indice=numero".
+       */
+</script>
+</body>
+</html>

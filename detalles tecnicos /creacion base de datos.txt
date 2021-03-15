@@ -1,0 +1,55 @@
+ CREATE TABLE users(
+ email varchar(100),
+ username varchar(20),
+ password varchar(60),
+ name varchar(20),
+ lastName varchar(60),
+ sex bool,
+ age int,
+ country varchar(20),
+ verifiedEmail bool,
+ premium bool,
+ maritalStatus varchar(20),
+ sons bool,
+ housingSituation varchar(15),
+ educationalLevel varchar(20),
+ work bool,
+ ethnicGroup varchar(20),
+ smokes bool,
+ drink bool,
+ heigth float,
+ bodyType varchar(15),
+ header varchar(50),
+ description varchar(300),
+ online bool
+ );
+
+create table conversations(
+ id serial,
+ id_user_a varchar(15),
+ id_user_b varchar(15),
+ new_messages_user_a int,
+ new_messages_user_b int,
+ last_message_sent text
+);
+
+create table messages(
+ id_conversation int,
+ id_user varchar(15),
+ message text
+);
+
+create table profile_views(
+ id_user varchar(15),
+ id_visiting_user varchar(15),
+ checked_by_the_user bool
+);
+
+create table likes(
+ id_user varchar(15),
+ id_user_who_likes varchar(15),
+ checked_by_the_user bool
+);
+
+
+

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/css/bootstrap.min.css" />
+  <title></title>
+  <style>
+    h2, p, label, li, th, td{
+      font-family: monospace;
+    }
+    img{
+      max-width: 100%;
+      max-height: auto;
+      width: 100px;
+      height: 100px;
+      border-radius:150px;
+    }
+    #online-circle{
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: green;
+    }
+  </style>
+  <style>
+      body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+      #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
+      #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
+      #input:focus { outline: none; }
+      #form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
+
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages > li { padding: 0.5rem 1rem; }
+      #messages > li:nth-child(odd)
+    </style>
+</head>
+
+<body>
+ <nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/search">Busqueda</a></li>
+    <li class="breadcrumb-item"><a href="/chat-interface">Chat</a></li>
+    <li class="breadcrumb-item"><a href="/my-profile">Mi perfil</a></li>
+    <li class="breadcrumb-item"><a href="/account-settings">Configuracion de la cuenta</a></li>
+    <li class="breadcrumb-item"><a href="/logout">Salir</a></li>
+  </ol>
+</nav>
+<!--#profilePhoto-->
+<!--#username-->
+<!--hide-->
+<!--online-->
+    <ul id="messages">
+      <!--messages-->
+    </ul>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" /><button>Send</button>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket=io();
+      socket.on('connect', ()=>{
+        socket.emit('user online', [document.querySelector('div').id, document.querySelector('p').textContent]);
+      });
+      var messages=document.getElementById('messages');
+      var form=document.getElementById('form');
+      var input=document.getElementById('input');
+
+      form.addEventListener('submit', e=>{
+        e.preventDefault();
+        if (input.value) {
+          //Envio un array con el mensaje del usuario como primer elemento y el usuario destinatario con el segundo.
+          socket.emit('chat message', [`${document.querySelector('div').id}: ${input.value}`, document.querySelector('p').textContent]); 
+          input.value='';
+        }
+      });
+      
+      socket.on('chat message', msg=>{
+        var item=document.createElement('li');
+        item.textContent=msg[0];
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+    </script>
+</body>
+</html>

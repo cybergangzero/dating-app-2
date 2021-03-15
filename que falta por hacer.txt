@@ -1,0 +1,36 @@
+Parece que ya he implementado la funcionalidad "me gusta".
+Aunque todavia falta la capacidad para que el usuario vea sus "me gusta".
+Esa es facil, asi que no me preocupare por eso.
+
+Falta rehacer la funcionalidad de chat, junto a los nuevos mensajes, implementando la base de datos.
+Y las visitas de perfil.
+
+Por ultimo, necesito implementar la validacion y sanitizacion de entradas de usuario, para evitar ataques
+de inyeccion sql.
+
+Una vez hecho esto, solo me queda hacer las necesarias pruebas unitarias e integrales para ver que la aplicacion
+funciona bien para las entradas incorrectas, incorrectas y es tolerante a fallas. Depurar las fallas que vayan 
+apareciendo, por supuesto.
+
+Despues tengo que trabajar en la interfaz de presentacion, hacerla mas interesante, resolver el problema
+de los terminos y condiciones, politica de privacidad...
+
+Luego, configurar el email, para implementar la verificacion por email, olvide mi contraseña.
+
+Luego implementar el pago por paypal para la membresia premium (y los reembolsos), y hacer los necesarios ajustes de 
+funcionamiento para aquellos que no son miembros premium y los que si.
+
+Luego viene la infraestructura, el nombre de dominio, la seguridad del propio servidor, endurecimiento
+del kernel, entre otras cosas.
+
+Luego hacer las correspondientes pruebas de carga con apache jmeter.
+
+Luego hacerle publicidad por reddit y chats irc, entre otros medios.
+
+Creo que eso sera suficiente.
+
+Nota: La implementacion de correo podria darme pereza, igual que la implementacion de paypal y la perdida de 
+anonimato que conlleva, ademas de la molestia de tener que rembolsar.
+Podria simplemente implementar pago por bitcoin (con bitpay) y si un usuario olvido su contraseña,
+pedirle respuestas a las preguntas de seguridad... 
+Y mucho adfly y ouo, por supuesto :p

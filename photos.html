@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta charset="utf-8">
+  <title></title>
+  <style type="text/css">
+    img{
+      max-width: 100%;
+      height: auto; 
+    }
+    h2, p, label, li, th, td{
+      font-family: monospace;
+    }
+  </style>
+  <link rel="stylesheet" href="/css/bootstrap.min.css" />
+  <script src="/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+  <!--Los siguientes archivos de la libreria croppie solo se serviran si el usuario va a subir una foto, es decir,
+    si el usuario que visualiza el documento photos.html es el propio usuario (el que inicio sesion). Una solucion
+    a esto podria ser escribir estos archivos desde el servidor en funcion de si es el usuario propio o no-->
+  <link rel="stylesheet" href="/croppie/croppie.css" type="text/css"/>
+  <script src="/croppie/croppie.js" type="text/javascript"></script>
+</head>
+
+<body>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/search">Busqueda</a></li>
+    <li class="breadcrumb-item"><a href="/chat-interface">Chat</a></li>
+    <li class="breadcrumb-item"><a href="/my-profile">Mi perfil</a></li>
+    <li class="breadcrumb-item"><a href="/account-settings">Configuracion de la cuenta</a></li>
+    <li class="breadcrumb-item"><a href="/logout">Salir</a></li>
+  </ol>
+</nav>
+<div class="img-modal"></div> <!--Se genera una ventana modal cuando el usuario hace click en una  foto-->
+<img src="" id="photoView"> <!--Para la vista del recorte de la foto que va a subir el usuario-->
+<input  class="form-control" type="file" id="photo" name="photo">
+<table class="table">
+  <tbody>
+    <!--Fotos-->
+  </tbody>
+</table>
+
+<link rel="stylesheet" href="/css/modal.css" type="text/css">
+<script src="/js/modal.js" type="text/javascript"></script>
+<script type="text/javascript">
+  initModal("img-modal"); //Initialize Modal by class of modal
+  addModal(document.querySelectorAll("img")); // Add Modal to Array of Image/Images
+</script>
+
+<script>
+  /*Este script servira para usar la libreria croppie con el fin de hacer que el usuario recorte la foto que va a subir
+  con las dimensiones especificadas*/
+  let photo=document.getElementById('photo');
+  photo.addEventListener('change', ()=>{
+    let objectURL=URL.createObjectURL(photo.files[0]);
+    let photoView=document.getElementById('photoView');
+    photoView.src=objectURL;
+    let vanilla=new Croppie(photoView, {  //ejemplo de vanilla croppie
+      viewport: { width: 300, height: 300 },
+      boundary: { width: 500, height: 500, type: 'square'},
+    });
+    let enviarFoto=document.createElement('button');
+    enviarFoto.textContent='Agregar foto';
+    let cancelar=document.createElement('a');
+    cancelar.textContent='X';
+    enviarFoto.className='btn btn-primary';
+    enviarFoto.style.position='fixed';
+    enviarFoto.style.top='20px';
+    enviarFoto.style.left='585px';
+    enviarFoto.id='uploadPhoto';
+    cancelar.style.position='fixed';
+    cancelar.style.top='20px';
+    cancelar.style.left='700px';
+    //cancelar.id='cancel-photo';
+    cancelar.href='/my-profile/photos';
+    cancelar.style.color='red';
+    document.querySelector('body').appendChild(enviarFoto);
+    document.querySelector('body').appendChild(cancelar);
+    vanilla.element.style.position='fixed';
+    vanilla.element.style.top='20px';
+    let uploadPhoto=document.getElementById('uploadPhoto');
+    uploadPhoto.addEventListener('click', ()=>{
+      vanilla.result('blob', 'viewport', 'jpeg', 1).then(async (blob)=>{
+        let formdata=new FormData();
+        formdata.append('photo', blob); 
+        let request=await fetch('/my-profile/photos/upload-photo',{
+          method: 'POST',
+          body: formdata
+        });
+        let response=await request.json();
+        /*Y a partir de aqui hago un copy paste de un codigo que vi en stack overflow para redireccionar despues de recibir
+        una respuesta de una solicitud fetch*/
+        // Sets the new location of the current window.
+        window.location=response.url;
+        // Sets the new href (URL) for the current window.
+        window.location.href=response.url;
+        // Assigns a new URL to the current window.
+        window.location.assign(response.url);
+        // Replaces the location of the current window with the new one.
+        window.location.replace(response.url);
+        // Sets the location of the current window itself.
+        self.location=response.url;
+        // Sets the location of the topmost window of the current window.
+        top.location=response.url;
+      });
+    });
+  });
+</script>
+
+<script>
+  /*Seleccion de foto de perfil y borrado de fotos.*/
+    function formatearSrc(src){ //Esta funcion se encarga de formatear el src de las imagenes con el fin de enviar solo el nombre de la imagen.
+    //El nombre esta despues del primer '/'
+    let name='', contador=0;
+    for (let i=0; i<src.length; i++){
+      if (src[i]==='/'){
+        contador++;
+      }
+      if (src[i]!=='/' && contador===4){
+        name+=src[i];
+      }
+    }
+    return name;
+  }
+  let opcionesFotos=document.querySelectorAll('button');
+  opcionesFotos.forEach(opcion=>{
+  	/*Selecciono el id del nodo padre del boton, que en este caso es un numero relacionado a la propia foto 
+      (la foto tiene como id "photo"+"numero") , para luego seleccionar la foto correspondiente en cada uno de los casos, 
+      con el fin de enviar el src para que la foto sea eliminada o establecida como foto de perfil.*/
+    if (opcion.textContent==='Seleccionar como foto de perfil'){
+      opcion.addEventListener('click', async ()=>{
+        let numeroDeFoto=opcion.parentNode.parentNode.id;
+        let fotoSeleccionada=document.getElementById('photo'+numeroDeFoto);
+        nuevaFotoDePerfil={src: formatearSrc(fotoSeleccionada.src)};
+         /*Envio una solicitud para establecer la foto de perfil. Procedere de la siguiente manera:
+        En formato json envio el src de la imagen. El servidor se encargara de añadir al src una "etiqueta"
+        que servira para identificarla como la foto de perfil. La etiqueta sera "etiquetaFotoDePerfil!x#" y tan solo se
+        sumara al src(src+etiqueta). Pero claro, antes debo asegurarme de borrar la etiqueta de la anterior foto de perfil.
+        Si no hay etiqueta establecida, entonces procedere de la misma manera.*/
+        let request=await fetch('/my-profile/photos/change-profile-photo', {
+        method: 'put',
+        headers: {'Content-Type': 'application/json'}, 
+        body: JSON.stringify(nuevaFotoDePerfil)});
+        let response=await request.json();
+        if (response.message==='Foto de perfil cambiada!'){
+          /*Selecciono la foto y cambio su src para agregarle la constante. Asi puedo disminuir el error. Una manera que se me 
+          ocurre de identifiar la foto de perfil actual (para que al usuario no se elvide) al momento de elegir una nueva
+          foto de perfil es agregar un marco de algun color diferente al verde que identifique la foto de perfil actual*/
+          alert('Foto de perfil cambiada!');
+        } else{
+          alert('Error, intentelo de nuevo. Posible causa: Esta intentado cambiar su foto de perfil con su foto de perfil actual o es un error del sistema. En el segundo caso contacte con soporte.');
+        }
+      });
+    } else if (opcion.textContent==='Eliminar foto'){
+      opcion.addEventListener('click', async ()=>{
+        let numeroDeFoto=opcion.parentNode.parentNode.id;
+        let fotoAEliminar=document.getElementById('photo'+numeroDeFoto);
+        fotoAEliminar=formatearSrc(fotoAEliminar.src);
+        let objetoFoto={
+          foto: fotoAEliminar
+        };
+        let request=await fetch('/my-profile/photos', {
+          method:'delete', 
+          headers: {'Content-Type': 'application/json'}, 
+          body: JSON.stringify(objetoFoto)
+        });
+        let response=await request.json();
+        if (response.message==='Operacion fallida, intentelo de nuevo.'){
+          alert('Operacion fallida, intentelo de nuevo.');
+        } else{
+          //Refresco la vista con la ruta recibida. En este caso la url es el valor de message.
+          window.location=response.message;
+          window.location.href=response.message
+          window.location.assign(response.message);
+          window.location.replace(response.message);
+          self.location=response.message;
+          top.location=response.message;
+        }
+      });
+    }
+  });
+</script>
+
+</body>
+</html>
+

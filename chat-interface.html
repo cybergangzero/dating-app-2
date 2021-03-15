@@ -1,0 +1,67 @@
+<!--Esta sera la interfaz principal del chat. Aqui el usuario podra ver y seleccionar los usuarios con los que ya ha chatead-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/css/bootstrap.min.css" />
+  <title></title>
+  <style>
+    h2, p, label, li, th, td{
+      font-family: monospace;
+    }
+    img{
+      max-width: 100%;
+      max-height: auto;
+      width: 50px;
+      height: 50px;
+      border-radius:150px;
+      float: left;
+    }
+    #online-circle{
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: green;
+    }
+    .newMessages{
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: red;
+      color: white;
+      text-indent:5px;
+    }
+  </style>
+</head>
+
+<body>
+ <nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/search">Busqueda</a></li>
+    <li class="breadcrumb-item"><a href="/chat-interface">Chat</a></li>
+    <li class="breadcrumb-item"><a href="/my-profile">Mi perfil</a></li>
+    <li class="breadcrumb-item"><a href="/account-settings">Configuracion de la cuenta</a></li>
+    <li class="breadcrumb-item"><a href="/logout">Salir</a></li>
+  </ol>
+</nav>
+<table class="table">
+  <tbody>
+    <!--#Chat with other users-->
+  </tbody>
+</table>
+  <script>
+    const filas=document.querySelectorAll('tr');
+    filas.forEach((fila)=>{
+      fila.addEventListener('mouseenter', ()=>{
+        fila.style.background='#00008B';
+      });
+    });
+    filas.forEach((fila)=>{
+      fila.addEventListener('mouseleave', ()=>{
+        fila.style.background=null;
+      });
+    });
+  </script>
+</body>
+</html>

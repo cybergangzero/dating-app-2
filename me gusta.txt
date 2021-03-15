@@ -1,0 +1,19 @@
+Entonces, la plantilla de perfil de usuario tendra un nuevo componente:
+Boton me gusta.
+La funcionalidad "me gusta" sera asi:
+-El boton "me gusta con figura de corazon" sera mostrado a cualquier usuario que solicite la vista 
+del perfil algun otro usuario. Si un usuario pulsa el "me gusta" puede pasar una de dos cosas:
+Si el color del boton me gusta es "gris", se insertara en la tabla "likes" el nombre del usuario que ha
+recibido el me gusta, y el nombre del usuario que dio me gusta.
+Si el color es "rojo", se borrara en la tabla "likes" el registro correspondiente, aquel con
+el nombre del usuario que ha recibido el me gusta y el nombre del usuario que dio me gusta.
+Es de destacar que el click (o pulsado) del boton me gusta disparar un evento, el cual seria una
+comunicacion en formato json con el servidor (con fetch).
+Si es exitosa la operacion, el boton cambiara de color segun la operacion indicada (de gris a rojo o de rojo
+a gris).
+
+Ahora, para aclarar:
+-Un usuario A solicita ver el perfil de un usuario B.
+-Si el usuario A ha dado me gusta al usuario B, entonces se renderiza la plantilla para que se muestre
+un un color distinto al "me gusta con figura de corazon". El color sera rojo!
+Mientras que si el usuario no ha dado me gusta al usuario B, el color sera... gris.

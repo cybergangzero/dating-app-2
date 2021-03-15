@@ -1,0 +1,26 @@
+{
+  "name": "majorandminor",
+  "version": "1.0.0",
+  "description": "Aplicacion web de citas para hombres jovenes y mujeres mayores (o mujeres jovenes y hombres mayores) ",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "author": "cazadorSupremo",
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "bootstrap": "^5.0.0-beta1",
+    "croppie": "^2.6.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "multer": "^1.4.2",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
+    "pg": "^8.5.1",
+    "socket.io": "^3.1.0"
+  }
+}

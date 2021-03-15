@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/css/bootstrap.min.css" />
+  <title></title>
+  <style type="text/css">
+    img{
+      max-width: 100%;
+      height: auto;
+    }
+    h2, p, label, li, th, td{
+      font-family: monospace;
+    }
+  </style>
+</head>
+
+<body>
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/search">Busqueda</a></li>
+    <li class="breadcrumb-item"><a href="/chat-interface">Chat</a></li>
+    <li class="breadcrumb-item"><a href="/my-profile">Mi perfil</a></li>
+    <li class="breadcrumb-item"><a href="/account-settings">Configuracion de la cuenta</a></li>
+    <li class="breadcrumb-item"><a href="/logout">Salir</a></li>
+  </ol>
+</nav>
+<img src="foto de perfil">
+<!--online-->
+<p>Pais, Estado, Ciudad</p>
+<p id="userName">Nombre de usuario</p>
+<p>Nombre y Apellido</p>
+<p>¿Miembro premium?</p>
+<p>Correo verificado</p>
+  <!--likes que ha recibido o boton me gusta-->
+  <!--Fotos del mismo o fotos de otro usuario-->
+  <!--editar perfil o chat-->
+  <h2>Encabezado</h2>
+  <table id="datos" class="table">
+    <tr>
+      <th>Altura</th>
+      <td>valor</td>
+    </tr>
+    <tr>
+      <th>Tipo de cuerpo</th>
+      <td>valor</td>
+    </tr>
+    <tr>
+      <th>Grupo etnico</th>
+      <td>valor</td>
+    </tr>
+    <tr>
+      <th>Estado civil</th>
+      <td>valor</td>
+    </tr>
+    <tr>
+      <th>Hijos</th>
+      <td>valor</td>
+    </tr>
+    <tr>
+      <th>Situacion de vivienda</th>
+      <td>valor</td>
+    </tr>
+    <tr>
+      <th>Nivel de estudios</th>
+      <td>valor</td>
+    </tr>
+    <tr>
+      <th>Trabajas</th>
+      <td>valor</td>
+    </tr>
+    <tr>
+      <th>Fumas</th>
+      <td>valor</td>
+    </tr>
+    <tr>
+      <th>Bebes</th>
+      <td>valor</td>
+    </tr>
+</table>
+
+<p>Descripcion</p>
+
+<script>
+  /*Codigo para el "me gusta". Este script se ejecutara si es el perfil de un usuario ajeno. Lo dispara
+  la accion del usuario que esta viendo el perfil*/
+  let like=document.getElementById('like');
+  like.addEventListener('click', async ()=>{
+    /*Envio, aparte del nombre del usuario que recibio el me gusta(o no), el estado del boton (clase), ya que
+    eso determinara si debo añadir un me gusta o eliminarlo. Esto evitara trabajo al servidor, ya que no necesitara
+    hacer una consulta a la base de datos para saber si se añade o se elimina.*/
+    /*console.log(document.getElementById('userName').textContent)
+    console.log(like.className);*/
+    let data={receivingUser: document.getElementById('userName').textContent, buttonStatus: like.className};
+    let request=await fetch('user-profile/likes', {method: 'PUT', headers: {'Content-Type': 'application/json'}, 
+      body: JSON.stringify(data)});
+    let response=await request.json();
+    if (response.message==='Operacion exitosa'){
+      if (like.className==='btn btn-secondary'){
+        like.classList.replace('btn-secondary', 'btn-danger'); 
+      } else{
+        like.classList.replace('btn-danger', 'btn-secondary');
+      }
+    }
+  });
+
+  //Este script se ejecutara automaticamente si el perfil es de un usuario ajeno.
+  let linkPhotos=document.getElementById('photos');
+  let userName=document.getElementById('userName');
+  linkPhotos.href=`/search/users/user-profile/photos?userName=${userName.textContent}`;
+  let chat=document.getElementById('chat');
+  chat.href=`/chat-interface/chat?userName=${userName.textContent}`;
+</script>
+
+</body>
+</html>
