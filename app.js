@@ -27,7 +27,15 @@ app.use('/chat-interface', chat);
 
 const http=require('http').Server(app);
 const io=require('socket.io')(http);
-const fs=require('fs').promises;
+const {Client}=require('pg');
+const client=new Client({
+  user: process.env.DB_USER,
+  database: process.env.DB_DATABASE,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,   
+});
+client.connect();
+
 let usersConnectedToChat={};
 io.on('connection', socket => {
   socket.on('user online', users => {
@@ -37,23 +45,43 @@ io.on('connection', socket => {
     }
   });
   socket.on('chat message', async msg => {
+    /*Como el primer elemento del array "msg" es un objeto que tiene como unica propiedad
+    el nombre del usuario que envia el mensaje, y como valor el mensaje propio, solo necesito obtener
+    la propiedad del ese objeto con el metodo Object.keys(object), para luego usarlo en la obtencion del mensaje mismo
+    invocando la propiedad del objeto, e insertandolo en la base de datos en la tabla messages*/
+    let issuingUser=Object.keys(msg[0]);
+    issuingUser=issuingUser[0]; //El metodo anterior devuelve un array de propiedades. Al ser una, solo necesito la primera (indice 0)
+    let message=msg[0][issuingUser];
   	/*Antes de emitir el mensaje, debo asegurarme de que no sea codigo javascript, por lo que limpiare el mensaje con el
   	siguiente codigo:*/
-  	while (msg[0].includes('<script>') || msg[0].includes('</script>')){
-  	  msg[0]=msg[0].replace('<script>', '');
-  	  msg[0]=msg[0].replace('</script>', '');
+  	while (message.includes('<script>') || message.includes('</script>')){
+  	  message=message.replace('<script>', '');
+  	  message=message.replace('</script>', '');
   	}
-    io.emit('chat message', msg);
-    let resultChatFile=await read_chat_file.readChatFile(get.getUsernameFromMsg(msg[0]), msg[1], false);
+    let messageToDatabase=message; //Para luego de enviar al cliente, guardar en la base de datos.
+    //Envio el mensaje de la forma "usuario: mensaje" al cliente
+    messageToClient=issuingUser+': '+message;
+    io.emit('chat message', messageToClient);
+    //Anexo el mensaje a la base de datos
+    try{
+      let id=msg[2];
+      await client.query(`INSERT INTO messages values('${id}', '${issuingUser}', '${messageToDatabase}')`); 
+    } catch(err){
+      console.log(err);
+      console.log('Error al anexar un mensaje de chat a la base de datos.');
+    }
+    /*let resultChatFile=await read_chat_file.readChatFile(get.getUsernameFromMsg(msg[0]), msg[1], false);
     if (resultChatFile!==''){
       try{
         await fs.appendFile(`chats/${resultChatFile}.txt`, `<li>${msg[0]}</li>\n`);
       } catch(err){
         throw err;
       }
-    }
-    let issuingUser=get.getUsernameFromMsg(msg[0]), receivingUser=msg[1];
-    if (!(usersConnectedToChat.receivingUser===issuingUser)){ //Esto implica que el usuario receptor no esta conectado al chat con el usuario emisor.
+    }*/
+    /*El siguiente codigo sirve para, en caso de que el usuario receptor no este conectado al mismo chat que el usuario
+    emisor, aumentar en 1 la cantidad de nuevos mensajes del usuario receptor en esa conversacion*/
+    //let issuingUser=get.getUsernameFromMsg(msg[0]), receivingUser=msg[1];
+    /*if (!(usersConnectedToChat.receivingUser===issuingUser)){ //Esto implica que el usuario receptor no esta conectado al chat con el usuario emisor.
       try{
         await fs.stat(`chats/new-messages/${receivingUser}.txt`);
         let content=await fs.readFile(`./chats/new-messages/${receivingUser}.txt`, 'utf8');
@@ -68,7 +96,7 @@ io.on('connection', socket => {
           new_chat_messages.newChatMessages(issuingUser, receivingUser);
         }
       }
-    }
+    }*/
   });
   socket.on('disconnect', ()=>{
   	let x=socket.user;

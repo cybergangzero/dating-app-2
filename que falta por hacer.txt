@@ -3,7 +3,7 @@ Aunque todavia falta la capacidad para que el usuario vea sus "me gusta".
 Esa es facil, asi que no me preocupare por eso.
 
 Falta rehacer la funcionalidad de chat, junto a los nuevos mensajes, implementando la base de datos.
-Y las visitas de perfil.
+Y las visitas de perfil. //Chat funcionando, faltan los nuevos mensajes para poder completarlo.
 
 Por ultimo, necesito implementar la validacion y sanitizacion de entradas de usuario, para evitar ataques
 de inyeccion sql.

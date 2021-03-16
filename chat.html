@@ -54,6 +54,7 @@
     <ul id="messages">
       <!--messages-->
     </ul>
+    <!--id_conversation-->
     <form id="form" action="">
       <input id="input" autocomplete="off" /><button>Send</button>
     </form>
@@ -70,15 +71,26 @@
       form.addEventListener('submit', e=>{
         e.preventDefault();
         if (input.value) {
-          //Envio un array con el mensaje del usuario como primer elemento y el usuario destinatario con el segundo.
-          socket.emit('chat message', [`${document.querySelector('div').id}: ${input.value}`, document.querySelector('p').textContent]); 
+          /*Envio un array con el mensaje del usuario como primer elemento (y su nombre), el usuario destinatario con el segundo y el id de la conversarcion como tercero.
+          El primer div (sin contenido para ocultarlo) contiene como id el nombre del usuario que esta enviando el mensaje.
+          El segundo div, tambien sin contenido, contiene como id el id de la conversacion/chat. Esta es la razon
+          por la cual se hace un querySelectorAll y se selecciona el segundo elemento */
+          let issuingUserAndMessage={[document.querySelector('div').id]: input.value};
+          console.log(document.querySelectorAll('div')[1].id);
+          let divElements=document.querySelectorAll('div'), id;
+          if (divElements.length<3){ //El usuario no esta online y no existe el elemento 'div' que muestra el circulo online
+            id=divElements[1].id;
+          } else{ //El usuario si esta online y el id de la conversacion en esta circunstancia le toca el tercer lugar
+            id=divElements[2].id;
+          }
+          socket.emit('chat message', [issuingUserAndMessage, document.querySelector('p').textContent, id]);
           input.value='';
         }
       });
       
       socket.on('chat message', msg=>{
         var item=document.createElement('li');
-        item.textContent=msg[0];
+        item.textContent=msg;
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       });
