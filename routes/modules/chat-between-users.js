@@ -56,7 +56,8 @@ module.exports=async (req, res)=>{
   	  /*Se crea la conversacion en la base de datos entre los dos usuarios. Debo verificar si el 
   	  resultado de insertar tambien devuelve el resultado de la insercion como registro, y tambien puedo obtener
   	  el id sin tener que consultar de nuevo*/
-  	  conversation=await client.query(`INSERT INTO conversations (id_user_a, id_user_b) values ('${order[0]}', '${order[1]}')`);
+  	  conversation=await client.query(`INSERT INTO conversations (id_user_a, id_user_b) values ('${order[0]}', '${order[1]}') RETURNING id`);
+      //RETURNING {columnas}en postresql, sirve para retornar valores despues de consulta de manipulacion, como select, insert y update
     }
     if (messages!==undefined && messages.rows.length!==0){
   	  let conversation_content=';'
@@ -73,6 +74,18 @@ module.exports=async (req, res)=>{
         conversation_content+=`<li>${messages.rows[i].id_user}: ${messages.rows[i].message}</li>`;
       }
       plantilla=plantilla.replace('<!--messages-->', conversation_content);
+    }
+    /*No menos importante, la verificacion de si el usuario solicitante tiene mensajes no vistos en esa conversacion
+    Simplemente hago un query. Si hay nuevos mensajes (amount>0) lo actualizo a 0.*/
+    try{
+      let consulta=`SELECT amount FROM new_messages WHERE id_user='${req.user}' AND id_conversation='${conversation.rows[0].id}'`;
+      let areThereMessages=await client.query(consulta);
+      console.log(areThereMessages);
+      if (areThereMessages.rowCount===1 && areThereMessages.rows[0].amount>0){
+        await client.query(`UPDATE new_messages SET amount=0 WHERE id_user='${req.user}' AND id_conversation='${conversation.rows[0].id}'`)
+      }
+    } catch(err){
+      console.log(err);
     }
     //Y el toque final, enviar el id de la conversacion al usuario solicitante (vale la pena recordarlo)
     plantilla=plantilla.replace('<!--id_conversation-->', `<div id="${conversation.rows[0].id}"></div>`);

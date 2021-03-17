@@ -28,8 +28,6 @@ create table conversations(
  id serial,
  id_user_a varchar(15),
  id_user_b varchar(15),
- new_messages_user_a int,
- new_messages_user_b int,
  last_message_sent text
 );
 
@@ -37,6 +35,12 @@ create table messages(
  id_conversation int,
  id_user varchar(15),
  message text
+);
+
+create table new_messages(
+ id_user varchar(15),
+ id_conversation int,
+ amount int
 );
 
 create table profile_views(

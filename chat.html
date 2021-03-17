@@ -76,7 +76,6 @@
           El segundo div, tambien sin contenido, contiene como id el id de la conversacion/chat. Esta es la razon
           por la cual se hace un querySelectorAll y se selecciona el segundo elemento */
           let issuingUserAndMessage={[document.querySelector('div').id]: input.value};
-          console.log(document.querySelectorAll('div')[1].id);
           let divElements=document.querySelectorAll('div'), id;
           if (divElements.length<3){ //El usuario no esta online y no existe el elemento 'div' que muestra el circulo online
             id=divElements[1].id;

@@ -70,33 +70,28 @@ io.on('connection', socket => {
       console.log(err);
       console.log('Error al anexar un mensaje de chat a la base de datos.');
     }
-    /*let resultChatFile=await read_chat_file.readChatFile(get.getUsernameFromMsg(msg[0]), msg[1], false);
-    if (resultChatFile!==''){
+    /*Luego de enviar el mensaje al cliente y guardarlo en la base de datos, proseguire con verificar si sera un nuevo 
+    mensaje (no visto) para el usuario receptor*/
+    let receivingUser=msg[1], id=msg[2];
+    if (!(usersConnectedToChat.receivingUser===issuingUser)){ //Esto implica que el usuario receptor no esta conectado al chat con el usuario emisor.
       try{
-        await fs.appendFile(`chats/${resultChatFile}.txt`, `<li>${msg[0]}</li>\n`);
-      } catch(err){
-        throw err;
-      }
-    }*/
-    /*El siguiente codigo sirve para, en caso de que el usuario receptor no este conectado al mismo chat que el usuario
-    emisor, aumentar en 1 la cantidad de nuevos mensajes del usuario receptor en esa conversacion*/
-    //let issuingUser=get.getUsernameFromMsg(msg[0]), receivingUser=msg[1];
-    /*if (!(usersConnectedToChat.receivingUser===issuingUser)){ //Esto implica que el usuario receptor no esta conectado al chat con el usuario emisor.
-      try{
-        await fs.stat(`chats/new-messages/${receivingUser}.txt`);
-        let content=await fs.readFile(`./chats/new-messages/${receivingUser}.txt`, 'utf8');
-        if (!content.includes(issuingUser)){
-          await fs.appendFile(`./chats/new-messages/${receivingUser}.txt`, issuingUser+': 0\n');
+        /*Primero verifico si existe un registro de nuevos mensajes de esa conversacion para el usuario receptor.
+        Si no existe, entonces creo el registro con valor 1. Si existe, solo sumo 1 al registro existente.
+        No supe como usar la fucion  "EXIST" de postgresql para verificar si un registro en una tabla existe,
+        asi que tendre que usar select, si la cantidad de filas es 0, entonces no existe y debo insertarlo. Me pregunto
+        si la alternativa EXIST ofrecera mejor rendimiento...*/
+        let consulta=`SELECT * FROM new_messages WHERE id_user='${receivingUser}' AND id_conversation='${id}'`;
+        let exist=await client.query(consulta);
+        if (exist.rowCount===0){
+          await client.query(`INSERT INTO new_messages values('${receivingUser}', '${id}', '1')`);
+        } else{
+          await client.query(`UPDATE new_messages SET amount=amount+${1} WHERE id_user='${receivingUser}' AND id_conversation='${id}'`)
         }
-        new_chat_messages.newChatMessages(issuingUser, receivingUser);
       } catch(err){
-        if (err.code==='ENOENT'){
-          await fs.appendFile(`./chats/new-messages/${receivingUser}.txt`, '');
-          await fs.appendFile(`./chats/new-messages/${receivingUser}.txt`, issuingUser+': 0\n');
-          new_chat_messages.newChatMessages(issuingUser, receivingUser);
-        }
+      	console.log(err);
+      	console.log('Ha ocurrido un error al momento de guardar un nuevo mensaje no visto para el usuario receptor');
       }
-    }*/
+    }
   });
   socket.on('disconnect', ()=>{
   	let x=socket.user;
