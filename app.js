@@ -62,10 +62,12 @@ io.on('connection', socket => {
     //Envio el mensaje de la forma "usuario: mensaje" al cliente
     messageToClient=issuingUser+': '+message;
     io.emit('chat message', messageToClient);
-    //Anexo el mensaje a la base de datos
+    //Anexo el mensaje a la base de datos y tambien se actualiza el ultimo mensaje añadido a la conversacion.
     try{
       let id=msg[2];
-      await client.query(`INSERT INTO messages values('${id}', '${issuingUser}', '${messageToDatabase}')`); 
+      await client.query(`INSERT INTO messages values('${id}', '${issuingUser}', '${messageToDatabase}')`);
+      await client.query(`UPDATE conversations SET last_message_sent='${issuingUser+': '+messageToDatabase}' WHERE
+        id='${id}'`); 
     } catch(err){
       console.log(err);
       console.log('Error al anexar un mensaje de chat a la base de datos.');

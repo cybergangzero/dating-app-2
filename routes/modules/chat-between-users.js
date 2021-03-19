@@ -80,7 +80,6 @@ module.exports=async (req, res)=>{
     try{
       let consulta=`SELECT amount FROM new_messages WHERE id_user='${req.user}' AND id_conversation='${conversation.rows[0].id}'`;
       let areThereMessages=await client.query(consulta);
-      console.log(areThereMessages);
       if (areThereMessages.rowCount===1 && areThereMessages.rows[0].amount>0){
         await client.query(`UPDATE new_messages SET amount=0 WHERE id_user='${req.user}' AND id_conversation='${conversation.rows[0].id}'`)
       }
