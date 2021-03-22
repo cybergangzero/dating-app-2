@@ -8,7 +8,7 @@ const upload_photo=require('./modules/upload-photo.js');
 const delete_photo=require('./modules/delete-photo.js');
 const change_profile_photo=require('./modules/change-profile-photo.js');
 const edit_profile=require('./modules/edit-profile.js');
-
+const getLikes=require('./modules/get-likes.js');
 router.get('/', async (req, res)=>{ //como segundo parametro debe tener la funcion isLoggedIn
   //Consulto los datos del usuario (con clave) nombre, los combino con la plantilla de perfil de usuario y se lo envio.
   //Nota:Hacer una subrutina, asi puedo usarla tanto para ver el perfil del propio usuario como para ver un perfil ajeno.
@@ -36,5 +36,7 @@ router.get('/edit-profile', logged.isLoggedIn, (req, res)=>{
 });
 
 router.put('/edit-profile', logged.isLoggedIn, edit_profile.editProfile);
+
+router.get('/who-liked-you', getLikes);
 
 module.exports=router;

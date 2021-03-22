@@ -12,7 +12,7 @@ client.connect();
 module.exports=async (req, res)=>{
   if (req.body.buttonStatus==='btn btn-secondary'){ //Si es un me gusta recibido por el usuario
     try{
-      await client.query(`INSERT INTO likes values('${req.body.receivingUser}', '${req.user}')`);
+      await client.query(`INSERT INTO likes values('${req.body.receivingUser}', '${req.user}', 'false')`);
       res.json({message: 'Operacion exitosa'});
     } catch(err){
       res.json({message: 'Error en la operacion.'});

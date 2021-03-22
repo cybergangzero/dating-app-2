@@ -49,7 +49,7 @@ module.exports=async (req, res)=>{
   for (let i=0; i<conversations.rowCount; i++){
     content+=`<tr><td><a href="/chat-interface/chat?userName=${users[i]}">${online[i]}<img src="${profilePhotosOtherUsers[i]}"><p>${users[i]}
       </p>${lastChatMessages[i]}</a>`;
-    /*Me pregunto si debo modiifcar el codigo en caso de que las notificaiones de nuevos mensajes no existan...
+    /*Me pregunto si debo modiifcar el codigo en caso de que las notificaciones de nuevos mensajes no existan...
     Bueno, asumo que lo que puede ser es undefined en caso de que el registro de nuevos mensajes del usuario no 
     exista. Lo sabia! Si tengo que modificarlo, asumo que simplemente podria colocar una condicion
     de si la notificacion es indefinida*/

@@ -43,12 +43,6 @@ create table new_messages(
  amount int
 );
 
-create table profile_views(
- id_user varchar(15),
- id_visiting_user varchar(15),
- checked_by_the_user bool
-);
-
 create table likes(
  id_user varchar(15),
  id_user_who_likes varchar(15),

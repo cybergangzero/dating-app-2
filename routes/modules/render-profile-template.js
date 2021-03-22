@@ -25,6 +25,8 @@ module.exports.renderProfileTemplate=async (templatePath, userID, requestingUser
     consulta el perfil del otro usuario, se envia el nombre de usuario del perfil consultado, debo corregir esto 
     para que se estandarice como nada mas el nombre del usuario!*/
     if (requestingUser){
+      //Hago la consulta de likes y me gusta. Si hay, entonces los anexo como notifiacion (fondo rojo numero blanco)
+      let amountOflLikes=await client.query(`SELECT * FROM likes WHERE id_user='${userID}' AND checked_by_the_user='false'`);
       template=template.replace('<!--likes que ha recibido o boton me gusta-->', '<a href="/my-profile/who-liked-you">Usuarios a los que les gustas</a>');
       template=template.replace('<!--Fotos del mismo o fotos de otro usuario-->', '<a href="/my-profile/photos">Fotos</a>');
       template=template.replace('<!--editar perfil o chat-->', '<a href="/my-profile/edit-profile">Editar perfil</a>');

@@ -39,6 +39,9 @@ client.connect();
 let usersConnectedToChat={};
 io.on('connection', socket => {
   socket.on('user online', users => {
+    //El respectivo socket se une al room cuya clave sera el id de la conversacion del socket.
+    socket.join(users[2]);
+    //Se agrega el usuario a la tabla de usuarios conectados.
   	if (!usersConnectedToChat.hasOwnProperty(users[0])){
       Object.defineProperty(usersConnectedToChat, users[0], {value: users[1], enumerable: true, configurable: true});
       socket.user=users[0];
@@ -47,7 +50,7 @@ io.on('connection', socket => {
   socket.on('chat message', async msg => {
     /*Como el primer elemento del array "msg" es un objeto que tiene como unica propiedad
     el nombre del usuario que envia el mensaje, y como valor el mensaje propio, solo necesito obtener
-    la propiedad del ese objeto con el metodo Object.keys(object), para luego usarlo en la obtencion del mensaje mismo
+    la propiedad de ese objeto con el metodo Object.keys(object), para luego usarlo en la obtencion del mensaje mismo
     invocando la propiedad del objeto, e insertandolo en la base de datos en la tabla messages*/
     let issuingUser=Object.keys(msg[0]);
     issuingUser=issuingUser[0]; //El metodo anterior devuelve un array de propiedades. Al ser una, solo necesito la primera (indice 0)
@@ -59,9 +62,9 @@ io.on('connection', socket => {
   	  message=message.replace('</script>', '');
   	}
     let messageToDatabase=message; //Para luego de enviar al cliente, guardar en la base de datos.
-    //Envio el mensaje de la forma "usuario: mensaje" al cliente
+    //Envio el mensaje de la forma "usuario: mensaje" al cliente (al respectivo room)
     messageToClient=issuingUser+': '+message;
-    io.emit('chat message', messageToClient);
+    io.to(msg[2]).emit('chat message', messageToClient);
     //Anexo el mensaje a la base de datos y tambien se actualiza el ultimo mensaje añadido a la conversacion.
     try{
       let id=msg[2];
@@ -75,7 +78,8 @@ io.on('connection', socket => {
     /*Luego de enviar el mensaje al cliente y guardarlo en la base de datos, proseguire con verificar si sera un nuevo 
     mensaje (no visto) para el usuario receptor*/
     let receivingUser=msg[1], id=msg[2];
-    if (!(usersConnectedToChat.receivingUser===issuingUser)){ //Esto implica que el usuario receptor no esta conectado al chat con el usuario emisor.
+    if (!(usersConnectedToChat[receivingUser]===issuingUser)){ //Esto implica que el usuario receptor no esta conectado al chat con el usuario emisor.
+      console.log('funciona');
       try{
         /*Primero verifico si existe un registro de nuevos mensajes de esa conversacion para el usuario receptor.
         Si no existe, entonces creo el registro con valor 1. Si existe, solo sumo 1 al registro existente.

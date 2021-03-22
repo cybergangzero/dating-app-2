@@ -1,0 +1,4 @@
+En vez de enviar archivos html con mensajes "usuario o contraseña incorrectos", 
+"registro exitoso", etc, solo envio json.
+En caso de que la peticion sea exitosa, envio la url respectiva en formato json y
+uso el codigo que consegui en stackoverflow para cambiar de pagina
