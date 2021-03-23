@@ -5,6 +5,7 @@
   <title></title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="dist/datepicker.min.css">
   <style>
     #formulario{
       width: 400px;
@@ -18,45 +19,44 @@
 </head>
 
 <body>
+  <script src="dist/datepicker.min.js"></script>
 	<h2>majorandminor</h2>
 	<form method="post" action="/registry">
 
-    <label for="inputEmail4">Email</label>
-    <input type="email" class="form-control" name="email" required>
-
-    <label for="inputPassword4">Username</label>
+    <label for="inputPassword4">Username:</label>
     <input type="text" class="form-control" name="username" required>
 
-    <label for="inputPassword4">Password</label>
+    <label for="inputPassword4">Password:</label>
     <input type="password" class="form-control" name="password">
 
-    <label for="repetirContraseña">Repita la contraseña</label>
+    <label for="repetirContraseña">Repita la contraseña:</label>
     <input type="password" class="form-control" name="repeatPassword" required>
 
 
-    <label for="nombre">Nombre</label>
+    <label for="nombre">Nombre:</label>
     <input type="text" class="form-control" name="name" required>
 
-    <label for="apellido">Apellido</label>
+    <label for="apellido">Apellido:</label>
     <input type="text" class="form-control" name="lastName" required>
 
-    <label for="hombre">Hombre</label>
+    
+    <label for="birthDate">Fecha de nacimiento:</label>
+    <input id="dateOfBirth" class="form-control" name="dateOfBirth" required readonly>
+
+    <label for="pais">Pais:</label>
+    <select name="country" id="country" class="form-select">
+    </select>
+
+    <label for="hombre">Hombre:</label>
     <input type="radio" name="sex" value="man" required>
     
 
-    <label for="mujer">Mujer</label>
+    <label for="mujer">Mujer:</label>
     <input type="radio" name="sex" value="woman" required>
     
-    <label for="age">Edad</label>
-    <select name="age" id="age" class="form-select"> <!--Para seleccionar edad obligatoriamente debes seleccionar antes sexo-->
-    </select>
-
-    <label for="pais">Pais</label>
-    <select name="country" id="country" class="form-select">
-    </select>
-    
-    <label>Certifico que tengo más de 18 años y acepto los términos de uso, la política de privacidad y la política de cookies.</label>
+    <label>Certifico que tengo más de 18 años y acepto los términos de uso, la política de privacidad y la política de cookies de este sitio web.</label>
     <input type="checkbox" required>
+  
 
     <button type="submit" class="btn btn-success">Sign in</button>
 </form>
@@ -74,27 +74,12 @@
     pais.textContent=paises[i];
     seleccionadorPaises.appendChild(pais);
   }
-  let sexoElegido=document.getElementsByName('sex');
-  sexoElegido.forEach(checkbox=>
-    checkbox.addEventListener('click', ()=>{
-    let seleccionadorEdad=document.getElementById('age');
-    removerNodosHijos(seleccionadorEdad);
-    if (checkbox.value==='man'){
-      //La edad apropiada para un "cub" es de 18 a 35 años, segun yo...
-      for (let i=18; i<=35; i++){
-        let opcion=document.createElement('option');
-        opcion.textContent=i
-        seleccionadorEdad.appendChild(opcion);
-      }
-    } else {
-      for (let i=35; i<=90; i++){
-        let opcion=document.createElement('option');
-        opcion.textContent=i
-        seleccionadorEdad.appendChild(opcion);
-      }
-    }
-  })
-  );
+</script>
+
+ <script src="dist/datepicker.min.js"></script>
+<script>
+  const selector=document.getElementById('dateOfBirth');
+  const picker=datepicker(selector);
 </script>
 
 </body>

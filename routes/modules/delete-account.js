@@ -18,6 +18,7 @@ exports.deleteAccount=async (req, res)=>{
       } else if (result){
         let message;
         let borrado=await client.query(`DELETE FROM users WHERE username='${req.user}'`);
+        console.log(borrado);
         if (borrado.rowCount===1){
           message={message: 'Successful operation'};
           let userPhotos=await fs.readdir(`users-photos/${req.user}`);
@@ -30,6 +31,10 @@ exports.deleteAccount=async (req, res)=>{
           message={message: 'Error'};
         }
         res.json(message);
+        /*Despues de que el usuario  vea el mensaje de operacion exitosa, su sesion sera borrada y sera rerigido a index.html en
+        5 segundos*/
+        req.logout();
+        res.redirect("/");
       } else{
         res.json({message: 'Error'});
       }

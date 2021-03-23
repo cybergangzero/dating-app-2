@@ -9,6 +9,9 @@ const client=new Client({
 client.connect();
 const bcrypt=require('bcrypt');
 const saltRounds=10;
+const getAge=require('age-by-birthdate');
+
+
 module.exports.signin=async (req, res)=>{
   if (req.body.sex==='man'){
     req.body.sex=1;
@@ -17,9 +20,8 @@ module.exports.signin=async (req, res)=>{
   }
   try{
   	//Compruebo si ya esta ese correo o nombre de usuario registrado.
-  	let comprobacionDeEmail=await client.query(`SELECT EXISTS(SELECT * FROM users WHERE email='${req.body.email}')`);
   	let comprobacionDeUsername=await client.query(`SELECT EXISTS (SELECT * FROM users WHERE username='${req.body.username}')`);
-  	if (!comprobacionDeEmail.rows[0].exists && !comprobacionDeUsername.rows[0].exists){
+  	if (!comprobacionDeUsername.rows[0].exists){
       bcrypt.genSalt(saltRounds, (err, salt)=>{
         if (err) throw err;
         bcrypt.hash(req.body.password, salt, async (err, hash)=>{
@@ -27,8 +29,8 @@ module.exports.signin=async (req, res)=>{
           //Hasheo y agrego salt a la contraseña para almacenarla en la base de datos.
           let hashedPassword=hash;
           //Luego inserto la contraseña hasheada junto al resto de los datos a la base de datos para crear al nuevo usuario.
-          let registroDeNuevoUsuario=`INSERT INTO users (email, password, username, name, lastName, sex, age, country) values('${req.body.email}', '${hashedPassword}', 
-            '${req.body.username}', '${req.body.name}', '${req.body.lastName}', '${req.body.sex}', '${req.body.age}', '${req.body.country}')`;
+          let registroDeNuevoUsuario=`INSERT INTO users (username, password, name, lastName, sex, date_of_birth, age, country) values('${req.body.username}', '${hashedPassword}', 
+            '${req.body.name}', '${req.body.lastName}', '${req.body.sex}', '${req.body.dateOfBirth}', '${getAge(req.body.dateOfBirth)}', '${req.body.country}')`;
           await client.query(registroDeNuevoUsuario);
           console.log('Nuevo usuario registrado');
           res.redirect('/succesful-sign-up');

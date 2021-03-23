@@ -5,6 +5,7 @@ const htmlFilePath=__dirname.replace('/routes', '');
 const signin=require('./modules/signin.js');
 const localLogin=require('./modules/passport-local-login.js');
 const isLoggedIn=require('./modules/isLoggedIn.js');
+const {body, validationResult}=require('express-validator');
 
 const {Client}=require('pg');
 const client=new Client({
@@ -26,7 +27,21 @@ router.route('/registry')
   .get((req, res)=>{
     res.sendFile(htmlFilePath+'/registry.html');
   })
-  .post((req, res)=>{
+  .post(  //Antes de las pertinentes operaciones, valido y desinfecto los datos, si algun error, le avisare al usuario.
+     body('username').isLength({ min: 5, max: 20}),
+     body('password').isLength({ min: 6, max: 20}),
+     body('name').isLength({min: 3, max: 20 }), //minimo 3 porque el nombre mas corto que se me ocurrio fue "ana"
+     body('lastName').isLength({min: 5, max: 20}),
+     body('username').trim().escape(),
+     body('password').trim().escape(),
+     body('name').trim().escape(),
+     body('lastName').trim().escape(),
+    (req, res)=>{
+    // Finds the validation errors in this request and wraps them in an object with handy functions
+    const errors=validationResult(req);
+    if (!errors.isEmpty()){
+      return res.status(400).json({ errors: errors.array() });
+    }
     signin.signin(req, res);
   })
 router.get('/succesful-sign-up', (req, res)=>{
@@ -36,7 +51,20 @@ router.get('/error:sign-up-failed', (req, res)=>{
   res.sendFile(htmlFilePath+'/error:sign-up-failed.html');
 });
 
-router.post('/login', localLogin.authenticate);
+
+router.post('/login',
+   body('username').isLength({ min: 5, max: 20}),
+   body('password').isLength({ min: 6, max: 20}),
+   body('username').trim().escape(),
+   body('password').trim().escape(),
+   (req, res)=>{
+     const errors=validationResult(req);
+     if (!errors.isEmpty()){
+       return res.status(400).json({ errors: errors.array() });
+     }
+     localLogin.authenticate(req, res);
+  }
+);
 
 router.get('/error:incorrect-data', (req, res)=>{
   res.sendFile(htmlFilePath+'/error:incorrect-data.html');

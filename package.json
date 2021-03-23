@@ -11,12 +11,15 @@
     "nodemon": "^2.0.6"
   },
   "dependencies": {
+    "age-by-birthdate": "^1.0.1",
     "bcrypt": "^5.0.0",
     "bootstrap": "^5.0.0-beta1",
     "croppie": "^2.6.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
+    "express-validator": "^6.10.0",
+    "js-datepicker": "^5.18.0",
     "multer": "^1.4.2",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",

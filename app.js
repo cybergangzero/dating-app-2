@@ -14,6 +14,7 @@ app.use(express.static('Responsive-Image-Modal'));
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js'));
 app.use('/croppie', express.static(__dirname + '/node_modules/croppie'));
+app.use('/dist', express.static(__dirname + '/node_modules/js-datepicker/dist'));
 const index=require('./routes/index.js');
 const userProfile=require('./routes/user-profile.js');
 const search=require('./routes/search.js');

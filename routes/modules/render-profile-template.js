@@ -47,6 +47,7 @@ module.exports.renderProfileTemplate=async (templatePath, userID, requestingUser
     let result=await client.query(`SELECT * FROM users WHERE username='${userID}'`);
     template=template.replace('foto de perfil', srcProfilePhoto);
     template=template.replace('<!--online-->', paste_circle_online.pasteCircleOnline(result.rows[0].online));
+    template=template.replace('<!--age-->', `<p>Age: ${result.rows[0].age}</p>`);
     template=template.replace('Pais, Estado, Ciudad', result.rows[0].country);
     template=template.replace('Nombre de usuario', result.rows[0].username);
     let nameAndLastName=result.rows[0].name+' '+result.rows[0].lastname;

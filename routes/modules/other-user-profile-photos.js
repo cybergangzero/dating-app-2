@@ -32,6 +32,8 @@ exports.photos=async (req, res)=>{
           }
       }
     }
+    //Aparte de anexar las fotos, elimino de la platnilla el boton correspondiente a la subide de fotos.
+    plantilla=plantilla.replace('<input  class="form-control" type="file" id="photo" name="photo">', '');
     plantilla=plantilla.replace('<!--Fotos-->', contenidoDeTabla);
     res.send(plantilla);
   } catch(err){

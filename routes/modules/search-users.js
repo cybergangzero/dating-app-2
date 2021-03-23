@@ -11,7 +11,7 @@ let htmlFilePath=__dirname.replace('/routes', ''); htmlFilePath=htmlFilePath.rep
 const fs=require('fs').promises;
 const getProfilePhoto=require('./get-user-profile-picture.js');
 const onlineCircle=require('./paste-circle-online.js');
-
+const getAge=require('age-by-birthdate'); //Por si no he actualizado la edad de los usuarios. La actualizo cada mes haciendo revision de las fechas de nacimiento de los usuarios.
 exports.searchUsers=async (req, res)=>{
   /*Consulto el sexo del usuario para luego consultar todos los usuarios del sexo opuesto.
   Los mostrare en filas de 3. Cada perfil de usuario tendra como presentacion su banderita, estado, foto de perfil (avatar si no la tiene),
@@ -43,7 +43,7 @@ exports.searchUsers=async (req, res)=>{
   	let srcFotoDePerfil=await getProfilePhoto.getUserProfilePicture(perfilesDeUsuarios.rows[i].username);
     if (i===perfilesDeUsuarios.rows.length-1){
       fila+=`<td><a href="/search/users/user-profile?userName=${perfilesDeUsuarios.rows[i].username}"><img src="${srcFotoDePerfil}">${onlineCircle.pasteCircleOnline(perfilesDeUsuarios.rows[i].online)}<p>${perfilesDeUsuarios.rows[i].country}</p><p>${perfilesDeUsuarios.rows[i].username}</p>
-      <p>${perfilesDeUsuarios.rows[i].age}</p></a></td>`;
+      <p>${getAge(perfilesDeUsuarios.rows[i].date_of_birth)}</p></a></td>`;
       fila+='</tr>';
       datos+=fila;
     } else if(contador===3){
@@ -52,11 +52,11 @@ exports.searchUsers=async (req, res)=>{
       datos+=fila;
       fila=`<tr>`;
       fila+=`<td><a href="/search/users/user-profile?userName=${perfilesDeUsuarios.rows[i].username}"><img src="${srcFotoDePerfil}">${onlineCircle.pasteCircleOnline(perfilesDeUsuarios.rows[i].online)}<p>${perfilesDeUsuarios.rows[i].country}</p><p>${perfilesDeUsuarios.rows[i].username}</p>
-      <p>${perfilesDeUsuarios.rows[i].age}</p></a></td>`;
+      <p>${getAge(perfilesDeUsuarios.rows[i].date_of_birth)}</p></a></td>`;
       contador++;
     } else{
       fila+=`<td><a href="/search/users/user-profile?userName=${perfilesDeUsuarios.rows[i].username}"><img src="${srcFotoDePerfil}">${onlineCircle.pasteCircleOnline(perfilesDeUsuarios.rows[i].online)}<p>${perfilesDeUsuarios.rows[i].country}</p><p>${perfilesDeUsuarios.rows[i].username}</p>
-      <p>${perfilesDeUsuarios.rows[i].age}</p></a></td>`;
+      <p>${getAge(perfilesDeUsuarios.rows[i].date_of_birth)}</p></a></td>`;
       contador++;
     }
   }

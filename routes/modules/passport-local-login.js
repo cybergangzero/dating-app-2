@@ -11,18 +11,15 @@ const client=new Client({
 });
 client.connect();
 const bcrypt=require('bcrypt');
-passport.use('local-login', new LocalStrategy({
-  usernameField: 'email',
-  passwordField: 'password'
-  }, async (username, password, done)=>{
+passport.use('local-login', new LocalStrategy(async (username, password, done)=>{
      try{
-       let consultaDeContraseña=await client.query(`SELECT password FROM users WHERE email='${username}'`);
+       let consultaDeContraseña=await client.query(`SELECT password FROM users WHERE username='${username}'`);
        if (consultaDeContraseña.rows.length===1){
          bcrypt.compare(password, consultaDeContraseña.rows[0].password, async (err, result)=>{
            if (err) throw err;
            if (result){
              //Consulto el nombre de usuario para enviar el id con el objetivo de serializar. El username sera el req.user
-             let consultaDeUsername=await client.query(`SELECT username FROM users WHERE email='${username}'`);
+             let consultaDeUsername=await client.query(`SELECT username FROM users WHERE username='${username}'`);
              let newUser={id: consultaDeUsername.rows[0].username};
              return done(null, newUser);
            }
