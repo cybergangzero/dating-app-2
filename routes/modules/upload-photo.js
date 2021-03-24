@@ -11,11 +11,11 @@ exports.uploadPhoto=async (req, res)=>{
   */
   try{
     await fs.opendir(`users-photos/${req.user}`);
-  } catch(err){
-  	throw err;
-  } finally{
-  	//Instruccion que permite mover la foto desde el directorio users-photos hacia el subdirectorio del usuario...
+    //Instruccion que permite mover la foto desde el directorio users-photos hacia el subdirectorio del usuario...
     await fs.rename(`users-photos/${req.file.filename}`, `users-photos/${req.user}/${req.file.filename}`);
+  } catch(err){
+  	console.log(err);
+  } finally{
   	res.json({url: '/my-profile/photos'});
   }
 }

@@ -11,6 +11,7 @@ client.connect();
 const onlineCircle=require('./paste-circle-online.js');
 const profilePhoto=require('./get-user-profile-picture.js');
 let htmlFilePath=__dirname.replace('/routes', ''); htmlFilePath=htmlFilePath.replace('/modules', '');
+
 module.exports=async (req, res)=>{
   /*Aqui solo tengo que consultar las conversaciones que tenga el usuario en la tabla "conversations", ya sea
   obtener todas donde el "id_user_a" es el usuario solicitante, o el "id_user_b".

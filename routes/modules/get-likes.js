@@ -25,6 +25,8 @@ module.exports=async (req, res)=>{
     } else{
       template=template.replace('<!--users-->', '<h1>Parece que todavia no le gustas a nadie :(</h1>');
     }
+    //Antes de enviar la plantilla, actualizo los likes no vistos a vistos.
+    await client.query(`UPDATE likes SET checked_by_the_user=true WHERE id_user='${req.user}'`);
     res.send(template);
   } catch(err){
   	res.send('Ha ocurrido un error. Intentelo de nuevo.');

@@ -36,6 +36,7 @@ const client=new Client({
   host: process.env.DB_HOST,   
 });
 client.connect();
+const validator=require('validator');
 
 let usersConnectedToChat={};
 io.on('connection', socket => {
@@ -56,12 +57,14 @@ io.on('connection', socket => {
     let issuingUser=Object.keys(msg[0]);
     issuingUser=issuingUser[0]; //El metodo anterior devuelve un array de propiedades. Al ser una, solo necesito la primera (indice 0)
     let message=msg[0][issuingUser];
-  	/*Antes de emitir el mensaje, debo asegurarme de que no sea codigo javascript, por lo que limpiare el mensaje con el
+  	/*Antes de emitir el mensaje, debo asegurarme de que no sea codigo javascript (y no tenga 
+    caracteres especiales para evitar ataques de inyeccion sql, por lo que limpiare el mensaje con el
   	siguiente codigo:*/
   	while (message.includes('<script>') || message.includes('</script>')){
   	  message=message.replace('<script>', '');
   	  message=message.replace('</script>', '');
   	}
+    message=validator.escape(message);
     let messageToDatabase=message; //Para luego de enviar al cliente, guardar en la base de datos.
     //Envio el mensaje de la forma "usuario: mensaje" al cliente (al respectivo room)
     messageToClient=issuingUser+': '+message;
@@ -80,7 +83,6 @@ io.on('connection', socket => {
     mensaje (no visto) para el usuario receptor*/
     let receivingUser=msg[1], id=msg[2];
     if (!(usersConnectedToChat[receivingUser]===issuingUser)){ //Esto implica que el usuario receptor no esta conectado al chat con el usuario emisor.
-      console.log('funciona');
       try{
         /*Primero verifico si existe un registro de nuevos mensajes de esa conversacion para el usuario receptor.
         Si no existe, entonces creo el registro con valor 1. Si existe, solo sumo 1 al registro existente.

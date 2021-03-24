@@ -51,11 +51,9 @@ module.exports.profilePhotos=async (userID)=>{
     plantilla=plantilla.replace('<!--Fotos-->', contenidoDeTabla);
     return plantilla;
   } catch(err){
-  	//throw err;
-  	/*Si hay un error, entonces probablemente el subdirectorio no exista y se tenga que crear el subdirectorio del usuario.
-    Tengo mis dudas respecto a que solo puede ser que no exista, asi que probablemente tenga que usar otro bloque try-catch.
-    Creo el directorio vuelvo a redirigir al usuario para que al menos vea su vista de fotos vacia (recursion).*/
-  	await fs.mkdir(`users-photos/${userID}`);
-  	return '';
+    if (err.code==='ENOENT'){
+      await fs.mkdir(`users-photos/${userID}`);
+    }
+    return '';
   }
 }

@@ -40,7 +40,7 @@ router.route('/registry')
     // Finds the validation errors in this request and wraps them in an object with handy functions
     const errors=validationResult(req);
     if (!errors.isEmpty()){
-      return res.status(400).json({ errors: errors.array() });
+      return res.redirect('/error:sign-up-failed');
     }
     signin.signin(req, res);
   })
@@ -60,7 +60,7 @@ router.post('/login',
    (req, res)=>{
      const errors=validationResult(req);
      if (!errors.isEmpty()){
-       return res.status(400).json({ errors: errors.array() });
+       return res.redirect('/error:incorrect-data');
      }
      localLogin.authenticate(req, res);
   }
