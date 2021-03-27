@@ -20,7 +20,8 @@
  bodyType varchar(15),
  header varchar(50),
  description varchar(300),
- online bool
+ online bool,
+ src_profile_photo varchar(100)
  );
 
 create table conversations(

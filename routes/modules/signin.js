@@ -29,8 +29,9 @@ module.exports.signin=async (req, res)=>{
           //Hasheo y agrego salt a la contraseña para almacenarla en la base de datos.
           let hashedPassword=hash;
           //Luego inserto la contraseña hasheada junto al resto de los datos a la base de datos para crear al nuevo usuario.
-          let registroDeNuevoUsuario=`INSERT INTO users (username, password, name, lastName, sex, date_of_birth, age, country) values('${req.body.username}', '${hashedPassword}', 
-            '${req.body.name}', '${req.body.lastName}', '${req.body.sex}', '${req.body.dateOfBirth}', '${getAge(req.body.dateOfBirth)}', '${req.body.country}')`;
+          let registroDeNuevoUsuario=`INSERT INTO users (username, password, name, lastName, sex, date_of_birth, age, country, src_profile_photo) values('${req.body.username}', '${hashedPassword}', 
+            '${req.body.name}', '${req.body.lastName}', '${req.body.sex}', '${req.body.dateOfBirth}', '${getAge(req.body.dateOfBirth)}', 
+            '${req.body.country}', '${req.body.sex? '/default-avatars/male.jpeg' : '/default-avatars/female.jpeg'}')`;
           await client.query(registroDeNuevoUsuario);
           console.log('Nuevo usuario registrado');
           res.redirect('/succesful-sign-up');

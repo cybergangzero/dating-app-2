@@ -1,4 +1,13 @@
 const fs=require('fs').promises;
+require('dotenv').config();
+const {Client}=require('pg');
+const client=new Client({
+  user: process.env.DB_USER,
+  database: process.env.DB_DATABASE,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,   
+});
+client.connect();
 exports.changeProfilePhoto=async (req, res)=>{
   try{
   	const etiquetaFotoDePerfil='etiquetaFotoDePerfilxxxxx';
@@ -14,6 +23,7 @@ exports.changeProfilePhoto=async (req, res)=>{
   	  i++;
   	}
   	await fs.rename(`users-photos/${req.user}/${req.body.src}`, `users-photos/${req.user}/${req.body.src+etiquetaFotoDePerfil}`);
+    await client.query(`UPDATE users SET src_profile_photo='/${req.user}/${req.body.src+etiquetaFotoDePerfil}' WHERE username='${req.user}'`);
     res.json({message: 'Foto de perfil cambiada!'});
   } catch(err){
     res.json({message: 'Error en la operacion!'});

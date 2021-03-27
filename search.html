@@ -7,8 +7,8 @@
   <title></title>
    <style type="text/css">
     img{
-      max-width: 100%;
-      height: auto;
+      width: 100px;
+      height: 100px;
     }
     h2, p, label, li, th, td{
       font-family: monospace;
@@ -32,7 +32,7 @@
     <li class="breadcrumb-item"><a href="/logout">Salir</a></li>
   </ol>
 </nav>
-<form action="/search/users" method="get">
+
 <label for="customRange1">Rango de edad</label>
 <input type="range" class="form-range" id="age" name='edad' min="35" max="90" step="1" onchange="updateAge(this.value);">
 <p id="valorEdad"></p>
@@ -41,24 +41,14 @@
 </select>
 <input id="online" type="checkbox" name="online">
  <label>Online</label><br>
+ <input type="hidden" id="first-search" name="index" value="0"> <!--Como es la busqueda original, sera de indice 0-->
 <button type="submit" class="btn btn-primary" id="search">Buscar</button>
-</form>
 
-  <table class="table">
-    <tbody>
-       <!--Perfiles de usuarios-->
-    </tbody>
+
+  <table class="table" id="usuarios">
+    <!--<tbody>
+    </tbody>-->
   </table>
-
-  <nav aria-label="Page navigation example">
-  <ul class="pagination">
-    <!--<li class="page-item"><a class="page-link" href="#">Previous</a></li>
-    <li class="page-item"><a class="page-link" href="#">1</a></li>
-    <li class="page-item"><a class="page-link" href="#">2</a></li>
-    <li class="page-item"><a class="page-link" href="#">3</a></li>
-    <li class="page-item"><a class="page-link" href="#">Next</a></li>-->
-  </ul>
-</nav>
 
 
 <script>
@@ -69,6 +59,13 @@
     while (nodoPadre.firstChild){
       nodoPadre.removeChild(nodoPadre.firstChild);
     }
+  }
+  function pasteCircleOnline(online){
+    let onlineCircle=document.createElement('div');
+    if (online){
+      onlineCircle.id='online-circle';
+    }
+    return onlineCircle;
   }
   let paises=['Argentina', 'Bolivia', 'Brasil', 'Canada', 'Chile', 'Colombia', 'Costa Rica', 'Ecuador', 'España', 'Estados Unidos', 'Inglaterra', 'Mexico', 'Panama', 'Paraguay', 'Peru', 'Uruguay', 'Venezuela'];
   function removerNodosHijos(nodoPadre){
@@ -82,13 +79,76 @@
     pais.textContent=paises[i];
     seleccionadorPaises.appendChild(pais);
   }
-      /*Podria solucionar el problema de los indices de la siguiente forma:
-       Renderizo los perfiles respectivos del indice 1. Los indices se generaran dinamicamente
-       en funcion de la cantidad de perfiles recibidos. Si por ejemplo, recibo 200 perfiles, y los voy a dividir en 40, entonces
-       me quedaria 5 indices, donde cada uno muestra 40. Entonces, el indice 1 muestra los primeros 40 (1..40), el segundo
-       los perfiles del 41..80, y asi sucesivamente. Cabe descatacar que cada indice sera un link (a href) cuyos parametros
-       sera el numero, como por ejemplo a href="/ruta?indice=numero".
-       */
+  
+  let search=document.getElementById('search');
+  search.addEventListener('click', async ()=>{
+    let age=document.getElementById('age').value, country=document.getElementById('country').value, enLinea=document.getElementById('online').checked;
+    let request=await fetch(`/search/users?edad=${age}&pais=${country}&online=${enLinea}`, {method: 'GET', headers: {'Content-Type': 'application/json'}});
+    let response=await request.json();
+    //console.log(response);
+    let tabla=document.getElementById('usuarios');
+    eliminarNodosHijos(tabla);
+    let cuerpoTabla=document.createElement('tbody'), fila=document.createElement('tr'), contador=0;
+    for (let i=0; i<response.results.rowCount; i++){
+      if (i===response.results.rows.length-1){
+        let nuevaColumna=document.createElement('td');
+        let linkPerfil=document.createElement('a');
+        linkPerfil.href=`/search/users/user-profile?userName=${response.results.rows[i].username}`;
+        //falta imagen y el circulo online
+        let profilePhoto=document.createElement('img'), pais=document.createElement('p'), username=document.createElement('p'), edad=document.createElement('p');
+        profilePhoto.src=response.results.rows[i].src_profile_photo;
+        pais.textContent=response.results.rows[i].country;
+        username.textContent=response.results.rows[i].username;
+        edad.textContent=response.results.rows[i].age;
+        nuevaColumna.appendChild(linkPerfil);
+        linkPerfil.appendChild(profilePhoto);
+        linkPerfil.appendChild(pasteCircleOnline(response.results.rows[i].online));
+        linkPerfil.appendChild(pais);
+        linkPerfil.appendChild(username);
+        linkPerfil.appendChild(edad);
+        fila.appendChild(nuevaColumna);
+        cuerpoTabla.appendChild(fila);
+      } else if (contador===3){
+        contador=0;
+        cuerpoTabla.appendChild(fila);
+        fila=document.createElement('tr');
+        let nuevaColumna=document.createElement('td');
+        let linkPerfil=document.createElement('a');
+        linkPerfil.href=`/search/users/user-profile?userName=${response.results.rows[i].username}`;
+        let profilePhoto=document.createElement('img'), pais=document.createElement('p'), username=document.createElement('p'), edad=document.createElement('p');
+        profilePhoto.src=response.results.rows[i].src_profile_photo;
+        pais.textContent=response.results.rows[i].country;
+        username.textContent=response.results.rows[i].username;
+        edad.textContent=response.results.rows[i].age;
+        nuevaColumna.appendChild(linkPerfil);
+        linkPerfil.appendChild(profilePhoto);
+        linkPerfil.appendChild(pasteCircleOnline(response.results.rows[i].online));
+        linkPerfil.appendChild(pais);
+        linkPerfil.appendChild(username);
+        linkPerfil.appendChild(edad);
+        fila.appendChild(nuevaColumna);
+        contador++;
+      } else{
+        let nuevaColumna=document.createElement('td');
+        let linkPerfil=document.createElement('a');
+        linkPerfil.href=`/search/users/user-profile?userName=${response.results.rows[i].username}`;
+        let profilePhoto=document.createElement('img'), pais=document.createElement('p'), username=document.createElement('p'), edad=document.createElement('p');
+        profilePhoto.src=response.results.rows[i].src_profile_photo;
+        pais.textContent=response.results.rows[i].country;
+        username.textContent=response.results.rows[i].username;
+        edad.textContent=response.results.rows[i].age;
+        nuevaColumna.appendChild(linkPerfil);
+        linkPerfil.appendChild(profilePhoto);
+        linkPerfil.appendChild(pasteCircleOnline(response.results.rows[i].online));
+        linkPerfil.appendChild(pais);
+        linkPerfil.appendChild(username);
+        linkPerfil.appendChild(edad);
+        fila.appendChild(nuevaColumna);
+        contador++;
+      }
+    }
+    tabla.appendChild(cuerpoTabla);
+  });
 </script>
 </body>
 </html>

@@ -60,6 +60,28 @@
     </form>
     <script src="/socket.io/socket.io.js"></script>
     <script>
+      //Prueba para obtener mensajes
+      let test=document.querySelectorAll('div'), idAEnviar;
+      if (test.length<3){
+        idAEnviar=test[1].id;
+      } else{
+        idAEnviar=test[2].id;
+      }
+      let conversation={
+        id: idAEnviar
+      };
+      async function prueba(){
+        let request=await fetch('/chat-interface/chat/messages', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(conversation)});
+        let response=await request.json();
+        let messages=document.getElementById('messages');
+        for (let i=0; i<response.results.rows.length; i++){
+          let message=document.createElement('li');
+          message.textContent=`${response.results.rows[i].id_user}: ${response.results.rows[i].message}`;
+          messages.appendChild(message);
+        }
+        window.scrollTo(0, document.body.scrollHeight);
+      }
+      prueba();
       var socket=io();
       let issuingUser=document.querySelector('div').id; 
       let divElements=document.querySelectorAll('div'), id;

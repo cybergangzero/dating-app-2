@@ -49,31 +49,13 @@ module.exports=async (req, res)=>{
       order.push(req.query.userName);
       order.push(req.user);
     }
-    let messages, conversation=await client.query(`SELECT * FROM conversations WHERE id_user_a='${order[0]}' AND id_user_b='${order[1]}'`);
-    if (conversation.rows.length===1){
-      messages=await client.query(`SELECT * FROM messages where id_conversation=${conversation.rows[0].id}`);
-    } else{
-  	  /*Se crea la conversacion en la base de datos entre los dos usuarios. Debo verificar si el 
-  	  resultado de insertar tambien devuelve el resultado de la insercion como registro, y tambien puedo obtener
-  	  el id sin tener que consultar de nuevo*/
-  	  conversation=await client.query(`INSERT INTO conversations (id_user_a, id_user_b) values ('${order[0]}', '${order[1]}') RETURNING id`);
+    let conversation=await client.query(`SELECT * FROM conversations WHERE id_user_a='${order[0]}' AND id_user_b='${order[1]}'`);
+    if (conversation.rows.length===0){
+      /*Se crea la conversacion en la base de datos entre los dos usuarios. Debo verificar si el 
+      resultado de insertar tambien devuelve el resultado de la insercion como registro, y tambien puedo obtener
+      el id sin tener que consultar de nuevo*/
+      conversation=await client.query(`INSERT INTO conversations (id_user_a, id_user_b) values ('${order[0]}', '${order[1]}') RETURNING id`);
       //RETURNING {columnas}en postresql, sirve para retornar valores despues de consulta de manipulacion, como select, insert y update
-    }
-    if (messages!==undefined && messages.rows.length!==0){
-  	  let conversation_content=';'
-      /*Acerca de este bucle... me pregunto si podria ser fuente de un cuello de botella...
-      Quiero decir, si de repente 15 usuarios solicitaran un chat con algun otro, y tales chats tengan
-      1000 mensajes o mas, eso me daria una cantidad de 15000 repeticiones al mismo tiempo. O(15000)
-      seria la complejida en este caso. A mayor escala esto podria dar problemas...
-      Por cierto, debo implementar la funcionalidad que sirva para posicionar la pantalla en
-      los ultimos mensajes. Esto evita al usuario la incomodida de tener que bajarla el mismo.
-      Algo mas, otro cuello de botella podria ser la busqueda. Imagino que haya 10000 usuarios registrados, y
-      15 usuarios quisieran visualizar todos esos usuarios. O(150000) en este caso. Creo que tendre que implementar
-      la busqeuda de manera parcial, por sub indices, eso evitaria la carga al servidor...*/
-      for (let i=0; i<messages.rowCount; i++){
-        conversation_content+=`<li>${messages.rows[i].id_user}: ${messages.rows[i].message}</li>`;
-      }
-      plantilla=plantilla.replace('<!--messages-->', conversation_content);
     }
     /*No menos importante, la verificacion de si el usuario solicitante tiene mensajes no vistos en esa conversacion
     Simplemente hago un query. Si hay nuevos mensajes (amount>0) lo actualizo a 0.*/

@@ -2,20 +2,8 @@ Falta rehacer la funcionalidad de chat, junto a los nuevos mensajes, implementan
 Y las visitas de perfil. /*Chat funcionando, con implementacion de nuevos mensaje integrada.
 Solo falta la implementacion de la interfaz de chat.*/
 
-Luego falta hacer dos ajustes de optimizacion:
-1-Chat entre usuarios. Necesito que se renderize la conversacion desde el lado del cliente, para
-reducir la carga de trabajo al servidor. Esto lo podria lograr de la siguiente forma:
-Envio la plantilla de chat como actualmente lo estoy haciendo, excepto los mensajes.
-Los mensajes se enviaran una vez el usuario haya recibido la plantilla de chat. Se hara una peticion 
-fetch para solicitar los mensajes en formato json. Una vez recibidos, se anexaran a la plantilla.
-Mientras sucede esto, se mostrar uno de esos circulitos de carga con el mensaje "Se estan cargando los mensajes".
-2-La busqueda. No puedo simplemente enviar la plantilla con TODOS los usuarios que cumplen con los parametros
-de busqueda que solicita el usuario. Debo hacerlo por partes, y tener un indice para ir cargando las distintas partes.
-Que cada parte sea de 6 a 20 usuarios es razonable.
-Bonus: Me pregunto si tambien tendria que hacer lo mismo para los me gusta de los usuarios?
-Al menos lo mismo que en el paso 1, veo exagerado implimentar el trozeo y los indices para ver los me gusta que
-ha recibido el usuario :p
-Entonces si, renderizare desde el cliente los me gusta recibidos.
+
+Renderizar desde el cliente los me gusta recibidos.
 
 Ahora debo implementar la funcionalidad "olvidaste tu contraseña?". La funcionalidad sera sencilla, el usuario
 solo debe proveer su nombre de usuario y su clave criptografica (clave entregada una vez el usuario se haya registrado).
@@ -29,10 +17,10 @@ apareciendo, por supuesto.
 Despues tengo que trabajar en la interfaz de presentacion, hacerla mas vistosa, resolver el problema
 de los terminos y condiciones, politica de privacidad...
 
+Bonus: Me pregunto si necesito implementar un sistema anti bot, uno de esos captcha molestos que tienen las aplicaciones.
+
 Luego hacer las correspondientes pruebas de carga con apache jmeter.
 
-Luego implementar el pago por paypal para la membresia premium (y los reembolsos), y hacer los necesarios ajustes de 
-funcionamiento para aquellos que no son miembros premium y los que si.
 
 Luego viene la infraestructura, el nombre de dominio, la seguridad del propio servidor, endurecimiento
 del kernel, firewall, fail2ban, entre otras cosas.
@@ -40,9 +28,3 @@ del kernel, firewall, fail2ban, entre otras cosas.
 Luego hacerle publicidad por reddit y chats irc, entre otros medios.
 
 Creo que eso sera suficiente.
-
-Nota: La implementacion de correo podria darme pereza, igual que la implementacion de paypal y la perdida de 
-anonimato que conlleva, ademas de la molestia de tener que rembolsar.
-Podria simplemente implementar pago por bitcoin (con bitpay) y si un usuario olvido su contraseña,
-pedirle su clave cifrada (esa que recibe al momento del registro) y su username.
-Y mucho adfly y ouo, por supuesto :p
