@@ -1,9 +1,5 @@
-Falta rehacer la funcionalidad de chat, junto a los nuevos mensajes, implementando la base de datos.
-Y las visitas de perfil. /*Chat funcionando, con implementacion de nuevos mensaje integrada.
-Solo falta la implementacion de la interfaz de chat.*/
-
-
-Renderizar desde el cliente los me gusta recibidos.
+Hacer responsiva la subida de fotos (en una pantalla de smartphone, ni siquiera se ven los botones 
+de cargar foto y cancelar subida).
 
 Ahora debo implementar la funcionalidad "olvidaste tu contraseña?". La funcionalidad sera sencilla, el usuario
 solo debe proveer su nombre de usuario y su clave criptografica (clave entregada una vez el usuario se haya registrado).

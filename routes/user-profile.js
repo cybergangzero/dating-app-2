@@ -52,6 +52,10 @@ router.put('/edit-profile',
   }
 );
 
-router.get('/who-liked-you', getLikes);
+router.get('/who-liked-you', (req, res)=>{
+  res.sendFile(htmlFilePath+'/likes.html');
+});
+
+router.get('/who-liked-you/likes', getLikes);
 
 module.exports=router;

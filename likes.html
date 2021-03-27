@@ -11,10 +11,55 @@
     h1{
       font-family: monospace;
     }
+    #online-circle{
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: green;
+    }
   </style>
 <body>
-  <table>
-    <!--users-->
-  </table>
+  <ul id="users">
+  </ul>
+  <script>
+    function pasteCircleOnline(online){
+      let onlineCircle=document.createElement('div');
+      if (online){
+        onlineCircle.id='online-circle';
+      }
+      return onlineCircle;
+    }
+    async function getLikes(){
+      let request=await fetch('/my-profile/who-liked-you/likes', {method: 'GET', headers: {'Content-Type': 'application/json'}});
+      let response=await request.json();
+      if (response.results.rowCount===0){
+        let message=document.createElement('h1');
+        message.textContent='It seems that no one has liked you yet :(';
+        document.querySelector('body').appendChild(message);
+      }
+      if (response.results==='Ha ocurrido un error. Intentelo de nuevo.'){
+        document.write('An error has occurred, please try again.');
+      }
+      let users=document.getElementById('users');
+      for (let i=0; i<response.results.rowCount; i++){
+        let user=document.createElement('li');
+        let linkToUser=document.createElement('a');
+        linkToUser.href=`/search/users/user-profile?userName=${response.results.rows[i].username}`;
+        let profilePhoto=document.createElement('img'), username=document.createElement('p'), pais=document.createElement('p'), edad=document.createElement('p');
+        profilePhoto.src=response.results.rows[i].src_profile_photo;
+        username.textContent=response.results.rows[i].username;
+        pais.textContent=response.results.rows[i].country;
+        edad.textContent=response.results.rows[i].age;
+        linkToUser.appendChild(profilePhoto);
+        linkToUser.appendChild(pasteCircleOnline(response.results.rows[i].online));
+        linkToUser.appendChild(pais);
+        linkToUser.appendChild(username);
+        linkToUser.appendChild(edad);
+        user.appendChild(linkToUser);
+        users.appendChild(user);
+      }
+    }
+    getLikes();
+  </script>
 </body>
 </html>
