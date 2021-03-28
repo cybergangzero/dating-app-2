@@ -51,6 +51,7 @@
 <script>
   /*Este script servira para usar la libreria croppie con el fin de hacer que el usuario recorte la foto que va a subir
   con las dimensiones especificadas*/
+  let anchoPorcentajeBoundary=60, largoPorcentajeBoundary=65, leftPorcentajeEnviarFoto=23, leftPorcentajeCancelarFoto=61;
   let photo=document.getElementById('photo');
   photo.addEventListener('change', ()=>{
     let objectURL=URL.createObjectURL(photo.files[0]);
@@ -58,7 +59,7 @@
     photoView.src=objectURL;
     let vanilla=new Croppie(photoView, {  //ejemplo de vanilla croppie
       viewport: { width: 225, height: 225 },
-      boundary: { width: 500, height: 500, type: 'square'},
+      boundary: { width: anchoPorcentajeBoundary*parseInt(screen.width)/100, height: largoPorcentajeBoundary*parseInt(screen.height)/100, type: 'square'},
     });
     let enviarFoto=document.createElement('button');
     enviarFoto.textContent='Agregar foto';
@@ -66,12 +67,14 @@
     cancelar.textContent='Cancelar';
     enviarFoto.className='btn btn-primary';
     enviarFoto.style.position='fixed';
+    let x1=leftPorcentajeEnviarFoto*parseInt(screen.width)/100;
     enviarFoto.style.top='20px';
-    enviarFoto.style.left='585px';
+    enviarFoto.style.left=x1.toString()+'px';
     enviarFoto.id='uploadPhoto';
+    let x2=leftPorcentajeCancelarFoto*parseInt(screen.width)/100;
     cancelar.style.position='fixed';
     cancelar.style.top='20px';
-    cancelar.style.left='720px';
+    cancelar.style.left=x2.toString()+'px';
     //cancelar.id='cancel-photo';
     cancelar.href='/my-profile/photos';
     cancelar.style.color='red';
