@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/css/bootstrap.min.css" />
+  <title></title>
+   <style>
+    h2{
+      font-family: monospace;
+    }
+  </style>
+</head>
+<h1>Please enter your username, your account recovery code and your new password.</h1>
+<input type="text" class="form-control" placeholder="Username" id="username">
+<input type="text" class="form-control" placeholder="Recovery code" id="code">
+<input type="text" class="form-control" placeholder="New password" id="newPassword">
+<button type="button" class="btn btn-primary" id="confirmar">Confirmar</button>
+<script>
+  let confirmacion=document.getElementById('confirmar');
+  confirmacion.addEventListener('click', async ()=>{
+  	let data={
+  	  username: document.getElementById('username').value,
+  	  code: document.getElementById('code').value,
+  	  newPassword: document.getElementById('newPassword').value
+  	};
+    let request=await fetch('/recover-account', {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
+    let response=await request.json();
+    alert(response.result);
+  });
+</script>
+<body>
+
+</body>
+</html>

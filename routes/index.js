@@ -5,6 +5,7 @@ const htmlFilePath=__dirname.replace('/routes', '');
 const signin=require('./modules/signin.js');
 const localLogin=require('./modules/passport-local-login.js');
 const isLoggedIn=require('./modules/isLoggedIn.js');
+const recoverAccount=require('./modules/recover-account.js');
 const {body, validationResult}=require('express-validator');
 
 const {Client}=require('pg');
@@ -79,6 +80,25 @@ router.get('/logout', async (req, res)=>{
   await client.query(`UPDATE users SET online=false WHERE username='${req.user}'`);
   req.logout();
   res.redirect("/");
+});
+
+router.get('/recover-account', (req, res)=>{
+  res.sendFile(htmlFilePath+'/recover-account.html');
+});
+
+router.put('/recover-account',
+  body('username').isLength({ min: 5, max: 20}),
+  body('code').isLength({min:10, max: 10}),
+  body('newPassword').isLength({min: 6, max: 20}),
+  body('username').trim().escape(),
+  body('code').trim().escape(),
+  body('newPassword').trim().escape(),
+  (req, res)=>{
+  const errors=validationResult(req);
+  if (!errors.isEmpty()){
+    return res.json({result: 'Datos invalidos, por favor, intentelo de nuevo con datos validos'});
+  }
+  recoverAccount(req, res);
 });
 
 module.exports=router;

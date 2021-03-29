@@ -6,5 +6,5 @@ const chatBetweenUsers=require('./modules/chat-between-users.js');
 const getMessagesFromChat=require('./modules/get-messages-from-chat.js');
 router.get('/', logged.isLoggedIn, chatInterface);
 router.get('/chat', logged.isLoggedIn, chatBetweenUsers);
-router.post('/chat/messages', getMessagesFromChat);
+router.get('/chat/messages', getMessagesFromChat);
 module.exports=router;

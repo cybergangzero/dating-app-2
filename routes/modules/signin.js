@@ -10,7 +10,9 @@ client.connect();
 const bcrypt=require('bcrypt');
 const saltRounds=10;
 const getAge=require('age-by-birthdate');
-
+const cryptoRandomString=require('crypto-random-string');
+let htmlFilePath=__dirname.replace('/routes', ''); htmlFilePath=htmlFilePath.replace('/modules', '');
+const fs=require('fs').promises;
 
 module.exports.signin=async (req, res)=>{
   if (req.body.sex==='man'){
@@ -28,20 +30,31 @@ module.exports.signin=async (req, res)=>{
           if (err) throw err;
           //Hasheo y agrego salt a la contraseña para almacenarla en la base de datos.
           let hashedPassword=hash;
-          //Luego inserto la contraseña hasheada junto al resto de los datos a la base de datos para crear al nuevo usuario.
-          let registroDeNuevoUsuario=`INSERT INTO users (username, password, name, lastName, sex, date_of_birth, age, country, src_profile_photo) values('${req.body.username}', '${hashedPassword}', 
+          //Tambien genero el codigo de recuperacion de contraseña del usuario.
+          let recoveryCode=cryptoRandomString({length: 10});
+          //Luego inserto la contraseña hasheada y el codigo generado junto al resto de los datos a la base de datos para crear al nuevo usuario.
+          let registroDeNuevoUsuario=`INSERT INTO users (username, password, name, lastName, sex, date_of_birth, age, country, src_profile_photo, recovery_code) values('${req.body.username}', '${hashedPassword}', 
             '${req.body.name}', '${req.body.lastName}', '${req.body.sex}', '${req.body.dateOfBirth}', '${getAge(req.body.dateOfBirth)}', 
-            '${req.body.country}', '${req.body.sex? '/default-avatars/male.jpeg' : '/default-avatars/female.jpeg'}')`;
+            '${req.body.country}', '${req.body.sex? '/default-avatars/male.jpeg' : '/default-avatars/female.jpeg'}', '${recoveryCode}')`;
           await client.query(registroDeNuevoUsuario);
           console.log('Nuevo usuario registrado');
-          res.redirect('/succesful-sign-up');
+          let template=await fs.readFile(htmlFilePath+'/successful-sign-up.html', 'utf8');
+          template=template.replace('<!--username-->', `username: ${req.body.username}`);
+          template=template.replace('<!--password-->', `password: ${req.body.password}`);
+          template=template.replace('<!--recovery code-->', `Code to recover your account in case you forget your password: ${recoveryCode}`);
+          res.send(template);
+          /*res.send(`Succesful sign up! Now you can login in our website ;)\n Your credentials are:\n username: ${req.body.username}\n
+          	password: ${req.body.password}\n
+          	Code to recover your account in case you forget your password: ${hashedPassword}\n
+          	Please make sure to copy your credentials and save them, especially the recovery code, 
+          	because if you don't have it, you won't be able to recover your account in case you forget your password.`);*/
         });
       });
   	} else{
-  	  res.redirect('/error:sign-up-failed');
+  	  res.send('Error: Sing up failed :( Please, try again with valid data');
   	}
   } catch(err){
     console.log(err);
-    res.redirect('/error:sign-up-failed');
+    res.send('Error: Sing up failed :( Please, try again with valid data');
   }
 }

@@ -1,14 +1,11 @@
-Ahora debo implementar la funcionalidad "olvidaste tu contraseña?". La funcionalidad sera sencilla, el usuario
-solo debe proveer su nombre de usuario y su clave criptografica (clave entregada una vez el usuario se haya registrado).
-Por cierto...El registro. Debo agregar a la plantilla que se muestra si el registro es exitoso, 
-en formato texto, y tambien, en formato pdf (para que el usuario pueda descargarla en caso de que no quiera copiar y pegar). 
-
-Una vez hecho esto, solo me queda hacer las necesarias pruebas unitarias e integrales para ver que la aplicacion
+Solo me queda hacer las necesarias pruebas unitarias e integrales para ver que la aplicacion
 funciona bien para las entradas incorrectas, incorrectas y es tolerante a fallas. Depurar las fallas que vayan 
 apareciendo, por supuesto.
 
 Despues tengo que trabajar en la interfaz de presentacion, hacerla mas vistosa, resolver el problema
 de los terminos y condiciones, politica de privacidad...
+
+Por supuesto, cambiar el idioma de la aplicacion a ingles (para los hispanohablantes, siempre pueden traducir).
 
 Bonus: Me pregunto si necesito implementar un sistema anti bot, uno de esos captcha molestos que tienen las aplicaciones.
 

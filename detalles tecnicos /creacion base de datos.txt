@@ -21,7 +21,8 @@
  header varchar(50),
  description varchar(300),
  online bool,
- src_profile_photo varchar(100)
+ src_profile_photo varchar(100),
+ recovery_code varchar(10)
  );
 
 create table conversations(

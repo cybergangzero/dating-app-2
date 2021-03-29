@@ -8,6 +8,6 @@ const client=new Client({
 });
 client.connect();
 module.exports=async (req, res)=>{
-	let messages=await client.query(`SELECT * FROM messages WHERE id_conversation='${req.body.id}'`);
+	let messages=await client.query(`SELECT * FROM messages WHERE id_conversation='${req.query.id}'`);
 	res.json({results: messages});
 }

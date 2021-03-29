@@ -71,7 +71,7 @@
         id: idAEnviar
       };
       async function prueba(){
-        let request=await fetch('/chat-interface/chat/messages', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(conversation)});
+        let request=await fetch(`/chat-interface/chat/messages?id=${idAEnviar}`, {method: 'GET', headers: {'Content-Type': 'application/json'}});
         let response=await request.json();
         let messages=document.getElementById('messages');
         for (let i=0; i<response.results.rows.length; i++){
