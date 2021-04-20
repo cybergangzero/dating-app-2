@@ -1,3 +1,13 @@
+Pool de conexiones (postgresql), configuracion nginx, posiblemente uso de redis para aumentar el rendimiento, usar un
+gestor de procesos (PM2), etc...
+
+Hacer backups de la base de datos periodicamente (posiblemente cada 3 dias).
+
+Logs (winston)! Principalmente numero de visitantes (direccions ip) y hora de visita al dia, 
+errores de la aplicacion (para depuracion), variables basicas como cantidad de usuarios online cada hora (9:00 am, 10:00 am, ...)
+
+Usar helmet para fortalecer la seguridad de la aplicacion
+
 Solo me queda hacer las necesarias pruebas unitarias e integrales para ver que la aplicacion
 funciona bien para las entradas incorrectas, incorrectas y es tolerante a fallas. Depurar las fallas que vayan 
 apareciendo, por supuesto.

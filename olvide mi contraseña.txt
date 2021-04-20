@@ -1,0 +1,3 @@
+Le enviare una clave criptografica al usuario para que el pueda recuperar su contraseña, de manera
+que el usuario solo tenga que usarla junto a su nombre de usuario (no email) para restablecer su contraseña.
+La clave criptografica sera una cadena de 10 caracteres con caracteres aleatorios.

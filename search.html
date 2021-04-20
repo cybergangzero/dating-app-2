@@ -25,24 +25,24 @@
 <body>
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="/search">Busqueda</a></li>
+    <li class="breadcrumb-item"><a href="/search">Search</a></li>
     <li class="breadcrumb-item"><a href="/chat-interface">Chat</a></li>
-    <li class="breadcrumb-item"><a href="/my-profile">Mi perfil</a></li>
-    <li class="breadcrumb-item"><a href="/account-settings">Configuracion de la cuenta</a></li>
-    <li class="breadcrumb-item"><a href="/logout">Salir</a></li>
+    <li class="breadcrumb-item"><a href="/my-profile">My profile</a></li>
+    <li class="breadcrumb-item"><a href="/account-settings">Account settings</a></li>
+    <li class="breadcrumb-item"><a href="/logout">Logout</a></li>
   </ol>
 </nav>
 
-<label for="customRange1">Rango de edad</label>
+<label for="customRange1">Age range</label>
 <input type="range" class="form-range" id="age" name='edad' min="35" max="90" step="1" onchange="updateAge(this.value);">
 <p id="valorEdad"></p>
 <select class="form-select" id="country" name="pais">
-  <option>Todos los paises</option>
+  <option>All the countries</option>
 </select>
 <input id="online" type="checkbox" name="online">
  <label>Online</label><br>
  <input type="hidden" id="first-search" name="index" value="0"> <!--Como es la busqueda original, sera de indice 0-->
-<button type="submit" class="btn btn-primary" id="search">Buscar</button>
+<button type="submit" class="btn btn-primary" id="search">Search</button>
 
 
   <table class="table" id="usuarios">

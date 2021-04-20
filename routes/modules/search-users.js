@@ -14,10 +14,10 @@ const onlineCircle=require('./paste-circle-online.js');
 const getAge=require('age-by-birthdate'); //Por si no he actualizado la edad de los usuarios. La actualizo cada mes haciendo revision de las fechas de nacimiento de los usuarios.
 exports.searchUsers=async (req, res)=>{
   /*Consulto el sexo del usuario para luego consultar todos los usuarios del sexo opuesto.
-  Los mostrare en filas de 3. Cada perfil de usuario tendra como presentacion su banderita, estado, foto de perfil (avatar si no la tiene),
+  Los mostrare en filas de 3. Cada perfil de usuario tendra como presentacion su pais, foto de perfil (avatar si no la tiene),
   su nombre de usuario y su edad. Si el usuario hace click en alguno de los perfiles, ira directamente al perfil indicado con todos 
   sus datos. Los parametros de busqueda seran el rango de edad, el pais y si estan online. En caso de que sean todos los paises,
-  no incluyo eso  parametro en la consulta a la base de datos.
+  no incluyo ese  parametro en la consulta a la base de datos.
   Cada perfil sera un link en si mismo (a href) y lo unire junto a un parametro(en este caso el nombre de usuario) para que el usuario
   solicitante pueda ver el respectivo perfil...*/
   try{

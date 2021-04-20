@@ -10,7 +10,7 @@
  premium bool,
  maritalStatus varchar(20),
  sons bool,
- housingSituation varchar(15),
+ housingSituation varchar(17),
  educationalLevel varchar(20),
  work bool,
  ethnicGroup varchar(20),
@@ -27,26 +27,26 @@
 
 create table conversations(
  id serial,
- id_user_a varchar(15),
- id_user_b varchar(15),
+ id_user_a varchar(20),
+ id_user_b varchar(20),
  last_message_sent text
 );
 
 create table messages(
  id_conversation int,
- id_user varchar(15),
+ id_user varchar(20),
  message text
 );
 
 create table new_messages(
- id_user varchar(15),
+ id_user varchar(20),
  id_conversation int,
  amount int
 );
 
 create table likes(
- id_user varchar(15),
- id_user_who_likes varchar(15),
+ id_user varchar(20),
+ id_user_who_likes varchar(20),
  checked_by_the_user bool
 );
 

@@ -10,9 +10,6 @@ const client=new Client({
 client.connect();
 
 module.exports.getUserProfilePicture=async(username)=>{
-  /*En la consulta, verifico correo o usuario, porque cuando es el usuario, envia el idUsuario(su correo) y cuando el usuario
-   consulta el perfil del otro usuario, se envia el nombre de usuario del perfil consultado, debo corregir esto 
-   para que se estandarice como nada mas el nombre del usuario!*/
   let sexo=await client.query(`SELECT sex FROM users WHERE username='${username}'`), avatar;
   if (sexo.rows[0].sex){
     avatar='/default-avatars/male.jpeg';

@@ -12,7 +12,7 @@ const client=new Client({
 client.connect();
 module.exports.renderProfileTemplate=async (templatePath, userID, requestingUser, userLike='')=>{ /*El tercer parametro (tipo bool) de esta funcion
   definira si se generara el perfil del propio usuario solicitante o el perfil de otro usuario ajeno.
-  El cuarto parametro se usuara solo si el tercer parametro es falso. Este servira para verifica que al usuario 
+  El cuarto parametro se usuara solo si el tercer parametro es falso. Este servira para verificar que al usuario 
   le gusta el perfil del usuario solicitado.*/
   try{
   	/*Este codigo se encargara de generar el perfil del usuario.
@@ -32,8 +32,8 @@ module.exports.renderProfileTemplate=async (templatePath, userID, requestingUser
         newLikesNotificacion=`<div class="newLikes">${amountOflLikes.rowCount}</div>`;
       }
       template=template.replace('<!--likes que ha recibido o boton me gusta-->', `<a href="/my-profile/who-liked-you">${newLikesNotificacion} Usuarios a los que les gustas</a>`);
-      template=template.replace('<!--Fotos del mismo o fotos de otro usuario-->', '<a href="/my-profile/photos">Fotos</a>');
-      template=template.replace('<!--editar perfil o chat-->', '<a href="/my-profile/edit-profile">Editar perfil</a>');
+      template=template.replace('<!--Fotos del mismo o fotos de otro usuario-->', '<a href="/my-profile/photos">Photos</a>');
+      template=template.replace('<!--editar perfil o chat-->', '<a href="/my-profile/edit-profile">Edit profile</a>');
     } else{
       //Verifico si el usuario ha dado me gusta al perfil en cuestion.
       let likeButton, result=await client.query(`SELECT * FROM likes where id_user='${userID}' AND id_user_who_likes='${userLike}'`);
@@ -45,18 +45,18 @@ module.exports.renderProfileTemplate=async (templatePath, userID, requestingUser
         likeButton='<button id="like" class="btn btn-secondary"><img src="/heart.svg"></button>';
       }
       template=template.replace('<!--likes que ha recibido o boton me gusta-->', likeButton);
-      template=template.replace('<!--Fotos del mismo o fotos de otro usuario-->', '<a id="photos" href="/search/users/user-profile/photos">Fotos</a>');
-      template=template.replace('<!--editar perfil o chat-->', '<a id="chat" href="/chat-interface/chat">Mensaje</a>');
+      template=template.replace('<!--Fotos del mismo o fotos de otro usuario-->', '<a id="photos" href="/search/users/user-profile/photos">Photos</a>');
+      template=template.replace('<!--editar perfil o chat-->', '<a id="chat" href="/chat-interface/chat">Message</a>');
     }
     let result=await client.query(`SELECT * FROM users WHERE username='${userID}'`);
     template=template.replace('foto de perfil', srcProfilePhoto);
     template=template.replace('<!--online-->', paste_circle_online.pasteCircleOnline(result.rows[0].online));
     template=template.replace('<!--age-->', `<p>Age: ${result.rows[0].age}</p>`);
-    template=template.replace('Pais, Estado, Ciudad', result.rows[0].country);
-    template=template.replace('Nombre de usuario', result.rows[0].username);
+    template=template.replace('Country', result.rows[0].country);
+    template=template.replace('Username', result.rows[0].username);
     let nameAndLastName=result.rows[0].name+' '+result.rows[0].lastname;
-    template=template.replace('Nombre y Apellido', nameAndLastName);
-    template=template.replace('Encabezado', result.rows[0].header===null? '' : result.rows[0].header);
+    template=template.replace('Name and Last name', nameAndLastName);
+    template=template.replace('Header', result.rows[0].header===null? '' : result.rows[0].header);
     template=template.replace('valor', result.rows[0].heigth===null? '' : result.rows[0].heigth);
     template=template.replace('valor', result.rows[0].bodytype===null? '' : result.rows[0].bodytype);
     template=template.replace('valor', result.rows[0].ethnicgroup===null? '' : result.rows[0].ethnicgroup);
@@ -67,7 +67,7 @@ module.exports.renderProfileTemplate=async (templatePath, userID, requestingUser
     template=template.replace('valor', result.rows[0].work? 'Yes' : 'No');
     template=template.replace('valor', result.rows[0].smokes? 'Yes' : 'No');
     template=template.replace('valor', result.rows[0].drink? 'Yes' : 'No');
-    template=template.replace('Descripcion', result.rows[0].description===null? '' : result.rows[0].description);
+    template=template.replace('About you', result.rows[0].description===null? '' : result.rows[0].description);
     return template;
   } catch(err){
     console.log(err);
