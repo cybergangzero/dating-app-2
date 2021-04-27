@@ -32,7 +32,7 @@
     <li class="breadcrumb-item"><a href="/logout">Logout</a></li>
   </ol>
 </nav>
-
+<h2>Start the search for your potential partner ;)</h2>
 <label for="customRange1">Age range</label>
 <input type="range" class="form-range" id="age" name='edad' min="35" max="90" step="1" onchange="updateAge(this.value);">
 <p id="valorEdad"></p>
@@ -146,6 +146,11 @@
         fila.appendChild(nuevaColumna);
         contador++;
       }
+    }
+    if (response.results.rowCount===0){
+      let noUsers=document.createElement('h2');
+      noUsers.textContent='There are no users that meet your search requirements :(';
+      cuerpoTabla.appendChild(noUsers);
     }
     tabla.appendChild(cuerpoTabla);
   });

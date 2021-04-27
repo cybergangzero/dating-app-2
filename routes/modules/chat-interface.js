@@ -1,13 +1,6 @@
-require('dotenv').config();
 const fs=require('fs').promises;
-const {Client}=require('pg');
-const client=new Client({
-  user: process.env.DB_USER,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,   
-});
-client.connect();
+const db=require('./pgpool.js');
+const pool=db.getPool();
 const onlineCircle=require('./paste-circle-online.js');
 const profilePhoto=require('./get-user-profile-picture.js');
 let htmlFilePath=__dirname.replace('/routes', ''); htmlFilePath=htmlFilePath.replace('/modules', '');
@@ -21,6 +14,7 @@ module.exports=async (req, res)=>{
   El "last_message_sent" sera del tipo texto, y, contendra tanto el nombre del usuario que envio el mensaje, como su texto, 
   de la forma "user: message".
   Anexo esos datos a la plantilla de interfaz de chat y la envio al usuario solicitante.*/
+  const client=await pool.connect();
   let plantilla=await fs.readFile(htmlFilePath+'/chat-interface.html', 'utf8');
   let profilePhotosOtherUsers=[], lastChatMessages=[], online=[], notificationNewMessages=[], users=[], theActualOtherUser='';
   let conversations=await client.query(`SELECT * FROM conversations WHERE id_user_a='${req.user}' OR id_user_b='${req.user}'`);
@@ -45,6 +39,7 @@ module.exports=async (req, res)=>{
     notificationNewMessages.push(amountOfNewMessages); /*Si la cantidad de nuevoes mensajes es cero, no importa, cuando 
     anexe los datos a la plantilla, si es cero, no anexare la notificacion correspondiente*/
   }
+  client.release();
   //Y ahora anexo los datos a la plantilla para enviarla al usuario.
   let content='';
   for (let i=0; i<conversations.rowCount; i++){
@@ -60,6 +55,9 @@ module.exports=async (req, res)=>{
       }
     }
     content+='</td></tr>';
+  }
+  if (conversations.rowCount===0){
+    plantilla=plantilla.replace('<!--#Chat with other users-->', '<h1>You have no conversations :(</h1>');
   }
   plantilla=plantilla.replace('<!--#Chat with other users-->', content);
   res.send(plantilla);

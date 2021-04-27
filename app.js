@@ -1,6 +1,8 @@
 const express=require('express');
 const app=express();
-const port=8080; //En produccion seria el puerto 443 (https)
+const winston=require('winston');
+const expressWinston=require('express-winston');
+const port=5000; 
 const session=require('express-session');
 const passport=require('passport');
 app.use(session({ secret: "secret", resave: false, saveUninitialized: true })); 
@@ -20,6 +22,31 @@ const userProfile=require('./routes/user-profile.js');
 const search=require('./routes/search.js');
 const accountSettings=require('./routes/account-settings.js');
 const chat=require('./routes/chat.js');
+
+app.use(expressWinston.logger({
+      transports: [
+        new winston.transports.File({
+          filename: 'registration-of-request.log'
+        })
+      ],
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.json()
+      ),
+      meta: true, // optional: control whether you want to log the meta data about the request (default to true)
+      dynamicMeta: function(req, res) {
+        return {
+         ip: req.ip,
+         date: Date(),
+         user: req.user? req.user: null
+        }
+      },
+      msg: "HTTP {{req.method}} {{req.url}}", // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
+      expressFormat: true, // Use the default Express/morgan request formatting. Enabling this will override any msg if true. Will only output colors with colorize set to true
+      colorize: false, // Color the text and status code, using the Express/morgan color palette (text: gray, status: default green, 3XX cyan, 4XX yellow, 5XX red).
+      ignoreRoute: function (req, res) { return false; } // optional: allows to skip some log messages based on request and/or response
+}));
+
 app.use('/', index);
 app.use('/my-profile', userProfile);
 app.use('/search', search);
@@ -28,14 +55,8 @@ app.use('/chat-interface', chat);
 
 const http=require('http').Server(app);
 const io=require('socket.io')(http);
-const {Client}=require('pg');
-const client=new Client({
-  user: process.env.DB_USER,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,   
-});
-client.connect();
+const db=require('./routes/modules/pgpool.js');
+const pool=db.getPool();
 const validator=require('validator');
 
 let usersConnectedToChat={};
@@ -50,6 +71,7 @@ io.on('connection', socket => {
     }
   });
   socket.on('chat message', async msg => {
+    const client=await pool.connect();
     /*Como el primer elemento del array "msg" es un objeto que tiene como unica propiedad
     el nombre del usuario que envia el mensaje, y como valor el mensaje propio, solo necesito obtener
     la propiedad de ese objeto con el metodo Object.keys(object), para luego usarlo en la obtencion del mensaje mismo
@@ -101,6 +123,7 @@ io.on('connection', socket => {
       	console.log('Ha ocurrido un error al momento de guardar un nuevo mensaje no visto para el usuario receptor');
       }
     }
+    client.release();
   });
   socket.on('disconnect', ()=>{
   	let x=socket.user;
@@ -108,6 +131,24 @@ io.on('connection', socket => {
   	delete socket.user;
   });
 });
+
+app.use(expressWinston.errorLogger({
+  transports: [
+    new winston.transports.File({
+      filename: 'error.log'
+    })
+  ],
+  format: winston.format.combine(
+    winston.format.json()
+  ),
+  dynamicMeta: function(req, res) {
+    return {
+      ip: req.ip,
+      date: Date(),
+      user: req.user? req.user: null
+    }
+  }
+}));
 
 http.listen(port, '0.0.0.0', ()=>{
   console.log('Aplicacion iniciada!');

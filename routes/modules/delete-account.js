@@ -1,16 +1,10 @@
-require('dotenv').config();
-const {Client}=require('pg');
-const client=new Client({
-  user: process.env.DB_USER,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,   
-});
-client.connect();
+const db=require('./pgpool.js');
+const pool=db.getPool();
 const fs=require('fs').promises;
 const bcrypt=require('bcrypt');
 exports.deleteAccount=async (req, res)=>{
   try{
+    const client=await pool.connect();
     let truePassword=await client.query(`SELECT password FROM users where username='${req.user}'`);
     bcrypt.compare(req.body.password, truePassword.rows[0].password, async (err, result)=>{
       if (err){
@@ -39,7 +33,9 @@ exports.deleteAccount=async (req, res)=>{
         res.json({message: 'Error'});
       }
     });
+    client.release();
   } catch(err){
+    client.release(); //En caso de que el error no este relacionado a la adquisicion de la conexion, lo cual es lo mas probable...
     res.json({message: 'Error'});
   }
 }

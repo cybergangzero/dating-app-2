@@ -2,7 +2,7 @@
  username varchar(20),
  password varchar(60),
  name varchar(20),
- lastName varchar(20),
+ last_name varchar(20),
  sex bool,
  date_of_birth date,
  age int,

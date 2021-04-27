@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express=require('express');
 const router=express.Router();
 const htmlFilePath=__dirname.replace('/routes', '');
@@ -8,14 +7,8 @@ const isLoggedIn=require('./modules/isLoggedIn.js');
 const recoverAccount=require('./modules/recover-account.js');
 const {body, validationResult}=require('express-validator');
 
-const {Client}=require('pg');
-const client=new Client({
-  user: process.env.DB_USER,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,   //Todos estos parametros, si no se declaran, se establecen por defecto (ver documentacion. En caso del host, el por defecto tambien es localhost, pero lo incluyo por inercia)
-});
-client.connect();
+const db=require('./modules/pgpool.js');
+const pool=db.getPool();
 
 router.get('/', (req, res)=>{
   if (req.isAuthenticated()){
@@ -72,12 +65,16 @@ router.get('/error:incorrect-data', (req, res)=>{
 });
 
 router.get('/online', isLoggedIn.isLoggedIn, async (req, res)=>{
+  const client=await pool.connect();
   await client.query(`UPDATE users SET online=true WHERE username='${req.user}'`);
+  client.release();
   res.redirect('/my-profile');
 });
 
 router.get('/logout', async (req, res)=>{
+  const client=await pool.connect();
   await client.query(`UPDATE users SET online=false WHERE username='${req.user}'`);
+  client.release();
   req.logout();
   res.redirect("/");
 });

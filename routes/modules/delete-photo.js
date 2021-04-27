@@ -1,15 +1,9 @@
 const fs=require('fs').promises;
-require('dotenv').config();
-const {Client}=require('pg');
-const client=new Client({
-  user: process.env.DB_USER,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,   
-});
-client.connect();
+const db=require('./pgpool.js');
+const pool=db.getPool();
 exports.deletePhoto=async (req, res)=>{
   try{
+    const client=await pool.connect();
     await fs.unlink(`./users-photos/${req.user}/${req.body.foto}`);
     if (req.body.foto.includes('etiquetaFotoDePerfilxxxxx')){ 
       /*El usuario esta eliminando su foto de perfil. Entonces se sustituye en la base de datos el src del respectivo avatar
@@ -19,7 +13,9 @@ exports.deletePhoto=async (req, res)=>{
       	WHERE username='${req.user}'`);
     }
     res.json({message: "/my-profile/photos"}); //Para redirigir al usuario.
+    client.release();
   } catch(err){
+    client.release(); //En caso de que el error no este relacionado a la adquisicion de la conexion, lo cual es lo mas probable...
     res.json({message: "Operacion fallida, intentelo de nuevo."});
   }
 }

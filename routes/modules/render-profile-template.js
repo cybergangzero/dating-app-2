@@ -1,20 +1,14 @@
-require('dotenv').config();
 const get_user_profile_picture=require('./get-user-profile-picture.js');
 const paste_circle_online=require('./paste-circle-online.js');
 const fs=require('fs').promises;
-const {Client}=require('pg');
-const client=new Client({
-  user: process.env.DB_USER,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,   
-});
-client.connect();
+const db=require('./pgpool.js');
+const pool=db.getPool();
 module.exports.renderProfileTemplate=async (templatePath, userID, requestingUser, userLike='')=>{ /*El tercer parametro (tipo bool) de esta funcion
   definira si se generara el perfil del propio usuario solicitante o el perfil de otro usuario ajeno.
   El cuarto parametro se usuara solo si el tercer parametro es falso. Este servira para verificar que al usuario 
   le gusta el perfil del usuario solicitado.*/
   try{
+    const client=await pool.connect();
   	/*Este codigo se encargara de generar el perfil del usuario.
      Nota:Ordenar los datos en la base de datos para reducir este codigo(refactorizar) a un bucle...*/
     //Primero me encargo de la foto de perfil:
@@ -68,9 +62,10 @@ module.exports.renderProfileTemplate=async (templatePath, userID, requestingUser
     template=template.replace('valor', result.rows[0].smokes? 'Yes' : 'No');
     template=template.replace('valor', result.rows[0].drink? 'Yes' : 'No');
     template=template.replace('About you', result.rows[0].description===null? '' : result.rows[0].description);
+    client.release();
     return template;
   } catch(err){
-    console.log(err);
+    client.release(); //En caso de que el error no este relacionado a la adquisicion de la conexion, lo cual es lo mas probable...
   	return 'Error';
   }
 }

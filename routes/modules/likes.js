@@ -1,15 +1,9 @@
 //Codigo que se encarga de gestionar los me gusta de los usuarios. Se agregan o se eliminan
-require('dotenv').config();
-const {Client}=require('pg');
-const client=new Client({
-  user: process.env.DB_USER,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,   
-});
-client.connect();
+const db=require('./pgpool.js');
+const pool=db.getPool();
 
 module.exports=async (req, res)=>{
+  const client=await pool.connect();
   if (req.body.buttonStatus==='btn btn-secondary'){ //Si es un me gusta recibido por el usuario
     try{
       await client.query(`INSERT INTO likes values('${req.body.receivingUser}', '${req.user}', 'false')`);
@@ -25,4 +19,5 @@ module.exports=async (req, res)=>{
       res.json({message: 'Error en la operacion.'});
   	}
   }
+  client.release();
 };

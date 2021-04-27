@@ -1,16 +1,11 @@
-require('dotenv').config();
 const fs=require('fs').promises;
-const {Client}=require('pg');
-const client=new Client({
-  user: process.env.DB_USER,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,   
-});
-client.connect();
+const db=require('./pgpool.js');
+const pool=db.getPool();
 
 module.exports.getUserProfilePicture=async(username)=>{
-  let sexo=await client.query(`SELECT sex FROM users WHERE username='${username}'`), avatar;
+  const client=await pool.connect();
+  try{
+  	  let sexo=await client.query(`SELECT sex FROM users WHERE username='${username}'`), avatar;
   if (sexo.rows[0].sex){
     avatar='/default-avatars/male.jpeg';
   } else{
@@ -39,5 +34,10 @@ module.exports.getUserProfilePicture=async(username)=>{
         srcProfilePhoto=avatar;
       }
   }
+  client.release();
   return srcProfilePhoto;
+} catch(err){
+  //return '';
+}
+
 }

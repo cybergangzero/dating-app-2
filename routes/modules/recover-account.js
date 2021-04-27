@@ -1,17 +1,11 @@
-require('dotenv').config();
-const {Client}=require('pg');
-const client=new Client({
-  user: process.env.DB_USER,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,   
-});
-client.connect();
+const db=require('./pgpool.js');
+const pool=db.getPool();
 const bcrypt=require('bcrypt');
 const saltRounds=10;
 
 module.exports=async (req, res)=>{
   try{
+    const client=await pool.connect();
     let datosValidos=await client.query(`SELECT * FROM users WHERE username='${req.body.username}' AND recovery_code='${req.body.code}'`);
     if (datosValidos.rowCount===0){
       res.json({result: 'Usuario o codigo invalido, por favor, intentelo de nuevo'});
@@ -30,7 +24,9 @@ module.exports=async (req, res)=>{
         });
       });
     }
+    client.release();
   } catch(err){
+    client.release(); //En caso de que el error no este relacionado a la adquisicion de la conexion, lo cual es lo mas probable...
     res.json({result: 'Ha ocurrido un error, por favor, intentelo de nuevo'});
   }
 }

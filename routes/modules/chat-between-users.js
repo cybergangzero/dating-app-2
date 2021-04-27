@@ -1,15 +1,8 @@
-require('dotenv').config();
 const get_user_profile_picture=require('./get-user-profile-picture.js');
 let htmlFilePath=__dirname.replace('/routes', ''); htmlFilePath=htmlFilePath.replace('/modules', '');
 const fs=require('fs').promises;
-const {Client}=require('pg');
-const client=new Client({
-  user: process.env.DB_USER,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,   
-});
-client.connect();
+const db=require('./pgpool.js');
+const pool=db.getPool();
 const onlineCircle=require('./paste-circle-online.js');
 
 module.exports=async (req, res)=>{
@@ -32,6 +25,7 @@ module.exports=async (req, res)=>{
   Fin
   */
   try{
+    const client=await pool.connect();
     let profilePhoto=await get_user_profile_picture.getUserProfilePicture(req.query.userName);
     let plantilla=await fs.readFile(htmlFilePath+'/chat.html', 'utf8');
     plantilla=plantilla.replace('<!--#profilePhoto-->', `<img src="${profilePhoto}">`);
@@ -71,8 +65,9 @@ module.exports=async (req, res)=>{
     //Y el toque final, enviar el id de la conversacion al usuario solicitante (vale la pena recordarlo)
     plantilla=plantilla.replace('<!--id_conversation-->', `<div id="${conversation.rows[0].id}"></div>`);
     res.send(plantilla);
+    client.release();
   } catch(err){
-  	console.log(err);
+    client.release(); //En caso de que el error no este relacionado a la adquisicion de la conexion, lo cual es lo mas probable...
     res.send('Ha ocurrido un error. Por favor, intentelo de nuevo.');
   }
 }

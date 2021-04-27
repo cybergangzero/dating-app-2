@@ -1,12 +1,5 @@
-require('dotenv').config();
-const {Client}=require('pg');
-const client=new Client({
-  user: process.env.DB_USER,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,   
-});
-client.connect();
+const db=require('./pgpool.js');
+const pool=db.getPool();
 const bcrypt=require('bcrypt');
 const saltRounds=10;
 const getAge=require('age-by-birthdate');
@@ -21,6 +14,7 @@ module.exports.signin=async (req, res)=>{
   	req.body.sex=0;
   }
   try{
+    const client=await pool.connect();
   	//Compruebo si ya esta ese correo o nombre de usuario registrado.
   	let comprobacionDeUsername=await client.query(`SELECT EXISTS (SELECT * FROM users WHERE username='${req.body.username}')`);
   	if (!comprobacionDeUsername.rows[0].exists){
@@ -53,7 +47,9 @@ module.exports.signin=async (req, res)=>{
   	} else{
   	  res.send('Error: Sing up failed :( Please, try again with valid data');
   	}
+    client.release();
   } catch(err){
+    client.release(); //En caso de que el error no este relacionado a la adquisicion de la conexion, lo cual es lo mas probable...
     console.log(err);
     res.send('Error: Sing up failed :( Please, try again with valid data');
   }

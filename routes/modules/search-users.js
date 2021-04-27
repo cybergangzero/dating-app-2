@@ -1,12 +1,5 @@
-require('dotenv').config();
-const {Client}=require('pg');
-const client=new Client({
-  user: process.env.DB_USER,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,   
-});
-client.connect();
+const db=require('./pgpool.js');
+const pool=db.getPool();
 let htmlFilePath=__dirname.replace('/routes', ''); htmlFilePath=htmlFilePath.replace('/modules', '');
 const fs=require('fs').promises;
 const getProfilePhoto=require('./get-user-profile-picture.js');
@@ -21,8 +14,9 @@ exports.searchUsers=async (req, res)=>{
   Cada perfil sera un link en si mismo (a href) y lo unire junto a un parametro(en este caso el nombre de usuario) para que el usuario
   solicitante pueda ver el respectivo perfil...*/
   try{
+    const client=await pool.connect();
     let sexo=await client.query(`SELECT sex FROM users WHERE username='${req.user}'`), perfilesDeUsuarios;
-    if (req.query.pais==='Todos los paises'){
+    if (req.query.pais==='All the countries'){
       if (req.query.online==='true'){
         perfilesDeUsuarios=await client.query(`SELECT * FROM users WHERE sex='${!sexo.rows[0].sex}' AND age<='${req.query.edad}' AND online=true`);
       } else{
@@ -38,8 +32,10 @@ exports.searchUsers=async (req, res)=>{
           AND country='${req.query.pais}'`);
         }
     }
+    client.release();
     res.json({results: perfilesDeUsuarios});
   } catch(err){
+    client.release(); //En caso de que el error no este relacionado a la adquisicion de la conexion, lo cual es lo mas probable...
   	console.log(err);
     res.send('Ha ocurrido un error. Intentelo de nuevo');
   }

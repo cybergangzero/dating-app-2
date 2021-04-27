@@ -1,16 +1,10 @@
-require('dotenv').config();
-const {Client}=require('pg');
-const client=new Client({
-  user: process.env.DB_USER,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,   
-});
-client.connect();
+const db=require('./pgpool.js');
+const pool=db.getPool();
 const bcrypt=require('bcrypt');
 const saltRounds=10;
-exports.changePassword=(req, res)=>{ 
+exports.changePassword=async (req, res)=>{ 
   try{
+    const client=await pool.connect();
   	bcrypt.genSalt(saltRounds, (err, salt)=>{
   	  if (err){
   	  	return res.json({message: 'Error'});
@@ -23,7 +17,9 @@ exports.changePassword=(req, res)=>{
         res.json({message: 'Successful operation'});
       });
     });
+    client.release();
   } catch(err){
+    client.release(); //En caso de que el error no este relacionado a la adquisicion de la conexion, lo cual es lo mas probable...
   	res.json({message: 'Error'});
   }
 }
