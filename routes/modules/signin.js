@@ -27,7 +27,7 @@ module.exports.signin=async (req, res)=>{
           //Tambien genero el codigo de recuperacion de contraseña del usuario.
           let recoveryCode=cryptoRandomString({length: 10});
           //Luego inserto la contraseña hasheada y el codigo generado junto al resto de los datos a la base de datos para crear al nuevo usuario.
-          let registroDeNuevoUsuario=`INSERT INTO users (username, password, name, lastName, sex, date_of_birth, age, country, src_profile_photo, recovery_code) values('${req.body.username}', '${hashedPassword}', 
+          let registroDeNuevoUsuario=`INSERT INTO users (username, password, name, last_name, sex, date_of_birth, age, country, src_profile_photo, recovery_code) values('${req.body.username}', '${hashedPassword}', 
             '${req.body.name}', '${req.body.lastName}', '${req.body.sex}', '${req.body.dateOfBirth}', '${getAge(req.body.dateOfBirth)}', 
             '${req.body.country}', '${req.body.sex? '/default-avatars/male.jpeg' : '/default-avatars/female.jpeg'}', '${recoveryCode}')`;
           await client.query(registroDeNuevoUsuario);

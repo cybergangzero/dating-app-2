@@ -48,7 +48,7 @@ module.exports.renderProfileTemplate=async (templatePath, userID, requestingUser
     template=template.replace('<!--age-->', `<p>Age: ${result.rows[0].age}</p>`);
     template=template.replace('Country', result.rows[0].country);
     template=template.replace('Username', result.rows[0].username);
-    let nameAndLastName=result.rows[0].name+' '+result.rows[0].lastname;
+    let nameAndLastName=result.rows[0].name+' '+result.rows[0].last_name;
     template=template.replace('Name and Last name', nameAndLastName);
     template=template.replace('Header', result.rows[0].header===null? '' : result.rows[0].header);
     template=template.replace('valor', result.rows[0].heigth===null? '' : result.rows[0].heigth);

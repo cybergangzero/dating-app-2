@@ -19,7 +19,3 @@ Luego hacer las correspondientes pruebas de carga con apache jmeter.
 
 Luego viene la infraestructura, el nombre de dominio, la seguridad del propio servidor, endurecimiento
 del kernel, firewall, fail2ban, https con letsencrypt, entre otras cosas.
-
-Luego hacerle publicidad por reddit y chats irc, entre otros medios.
-
-Creo que eso sera suficiente.
